@@ -22,6 +22,12 @@ T = 300
 # Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
 a = 1
 
+# Lennard-Jones depth of potential well
+epsi = 1.0
+
+# Lennard-Jones distance at which potential is minimal
+r_min = 1.0
+
 ## classes
 class Particles(object):
 
