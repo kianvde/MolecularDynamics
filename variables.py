@@ -46,7 +46,6 @@ class Particles(object):
         #volumeBox   = boxSize**dimension
 
         numAxis = float(numParticlesAxis)
-        side        = boxSize/(numAxis-1)
         increment = int(round(numAxis))
         posAxis     = np.arange(0,numAxis)/numAxis * boxSize
         k=0
