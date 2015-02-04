@@ -1,11 +1,10 @@
-import Particles
+import variables as var
 
 class MolDynSimulation(object) :
 
-    particles = Particles
     # all the initialization functions are called in this block
     def __init__(self) :
-        self.particles = Particles()
+        self.particles = var.Particles()
         pass
 
 
