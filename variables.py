@@ -23,10 +23,10 @@ T = 300
 a = 1
 
 # Lennard-Jones depth of potential well
-epsi = 1.0
+eps = 1.0
 
 # Lennard-Jones distance at which potential is minimal
-r_min = 2.0**(1.0/6.0)
+rMin = 2.0**(1.0/6.0)
 
 ## classes
 class Particles(object):

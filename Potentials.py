@@ -2,44 +2,67 @@
 import numpy as np
 import variables as var
 
-# Lennard - Jones, sigma and epsilon not yet chosen!
-# WARNING: Code is vectorised, i.e. it trades memory for speed. If memory becomes an issue, remove matrices after they
+# Leonard - Joenes, sigma and epsilon not yet chosen!
+# WARNING: Code is vectorised, i.e. it trades memory for speed. If memory becomes an issue, remove matrixes after they
 # have been used, as the code creates multiple size 3*N^2 matrices for calculations
-def Len_Jones(Pos_mat):
-    shape = np.shape(Pos_mat)
-    # Copy the position matrix N times (N = shape[0] = number of particles), result = N x 3*N
-    Pos_rep = np.kron(np.ones((1,shape[0])),Pos_mat)
-    # Create a 'transpose' of the repeated matrix, result = N x 3*N
-    Pos_vec = np.reshape(Pos_mat,(1,shape[0]*shape[1]))
-    Pos_repT = np.kron(np.ones((shape[0],1)),Pos_vec)
-    # Subtract the two to get the relative distances
-    diff_mat = Pos_repT - Pos_rep
-    # Get the sum of the square distances (includes some awkward reshapes to facilitate summing)
-    diff_square = diff_mat**2
-    diff_square = np.reshape(diff_square,(shape[0]**2,shape[1]))
-    diff_squaresum = np.sum(diff_square,axis=1)
-    diff_squaresum = np.reshape(diff_squaresum,(shape[0],shape[0]))
+
+# function Len_Jones.
+# input:    positions -> numParticles by dimension matrix holding the potions components of the particles
+# output:   force -> numParticles by dimension matrix holding the force components on the particles
+#           potentialEnergy -> total potential energy for th particles
+def Len_Jones(positions):
+
+    # get the shape of the positions matrix (N,3)
+    shape = np.shape(positions)
+    (N, d) = shape
+
+    # Copy the position matrix N times resulting in a N by 3N matrix
+    repPositions1 = np.kron(np.ones((1,N)),positions)
+
+    # make a length 3N row vector by pasting the position vectors behind eachother then paste
+    # N times in another N by 3N matrix
+    rowPositions = np.reshape(positions,(1,N*d))
+    repPositions2 = np.kron(np.ones((N,1)),rowPositions)
+
+    # Subtract the two to get the relative component distances between the coordinates
+    componentDistance = repPositions2 - repPositions1
+
+    # Get the sum of the square distances (with some reshapes to sum) r2 is the
+    # distance squared
+    componentDistanceSquare = np.reshape(componentDistance**2,(N**2,d))
+    r2 = np.sum(componentDistanceSquare,axis=1)
+    r2 = np.reshape(r2,(N,N))
+
     # Replace zeros by infinity to avoid division by zero
-    diff_squaresum = (diff_squaresum == 0).choose(diff_squaresum,float("inf"))
-    # Calculate potential and forces using Lennard-Jones
-    Potential_vec = var.epsi * ( (var.r_min**12 / diff_squaresum**6) - 2.0 * (var.r_min**6 / diff_squaresum**3) )
-    Potential = 0.5 * np.sum(Potential_vec,axis=None)
-    Force_factor = 6.0 * var.epsi * ( (var.r_min**12 / diff_squaresum**7) - (var.r_min**6 / diff_squaresum**4) )
-    # Create a N x 3*N matrix for the force factor
-    Force_factor = Force_factor.repeat(shape[1])
-    Force_factor = np.reshape(Force_factor,(shape[0],shape[0]*shape[1]))
-    # Calculate the force vectors by multiplying the force factor and the difference vectors
-    Force_mat = Force_factor * diff_mat
+    r2[(r2 == 0)] = float("inf")
+
+    # Calculate potential and forces using Leonard-Jones V = 4*eps*((sigma/r)^12-(sigma/r)^6)
+    # potentials (forceFactor) is a N by N matrix with on position i,j the potential energy
+    # on particle i due to particle j
+    potentials = var.eps * ((var.rMin**12 / r2**6) - (var.rMin**6 / r2**3))
+    potentialEnergy = 0.5 * np.sum(potentials,axis=None)
+    forceFactor = 6.0 * var.eps * ((var.rMin**12 / r2**7) - (var.rMin**6 / r2**4))
+
+    # Create a N x 3*N matrix for the forceFactor
+    forceFactor = forceFactor.repeat(d)
+    forceFactor = np.reshape(forceFactor,(N,N*d))
+    # Calculate the force vectors by multiplying the forceFactor and the difference vectors
+    forceMagnitude = forceFactor * componentDistance
     # Get the force on each particle by summing contributions of all particles
-    Force = np.sum(Force_mat,axis=0)
+    force = np.sum(forceMagnitude,axis=0)
     # Reshape to a N x 3 matrix
-    Force = np.reshape(Force,shape)
-    return Force, Potential
+    force = np.reshape(force, shape)
+
+    return force, potentialEnergy
 
 
-#Gravitational potential along z-axis
-def Gravity(Pos_mat,Grav_const):
-    shape = np.shape(Pos_mat)
-    Potential = sum(Grav_const * Pos_mat[:,2])
-    Force = np.kron(np.ones((shape[0],1)),[0.0,0.0,-Grav_const])
-    return Force, Potential
+# function constant gravitation field
+#
+# input:    positions -> numParticles by dimension matrix holding the potions components of the particles
+# output:   force -> numParticles by dimension matrix holding the force components on the particles
+#           potentialEnergy -> total potential energy for the particles
+def Gravity(positions,g):
+    (N, d) = np.shape(positions)
+    potential = sum(g * positions[:,2])
+    force = np.kron(np.ones((N,1)),[0.0,0.0,-g])
+    return force, potential
