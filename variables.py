@@ -51,12 +51,13 @@ class Particles(object):
         posAxis     = np.arange(0,numAxis)/numAxis * boxSize
         k=0
         for j in range(0,numParticles,increment):
-            positions[j:j+increment, 0] = posAxis
-            if np.mod(j,increment**2)==0:
+            positions[j:j+increment, 0] = posAxis       #For every n particles that are on an axis, set coordinates of those n. Coords are in posAxis.
+                                                        #Let's say these are the x coords, then we have x0,x1..xn,x0,x1...xn etc.
+            if np.mod(j,increment**2)==0:               #Here add the 'z' coordinates after n**2
                 positions[j:j+increment**2, 2] = np.array([posAxis[k]]*increment**2)
                 k+=1
                 i = 0
-            if np.mod(j,increment)==0:
+            if np.mod(j,increment)==0:                  #Add the 'y' coordinates, after n repetitions of x0->xn
                 positions[j:j+increment, 1] = np.array([posAxis[i]]*increment)
                 i += 1
         #Using fcc lattice, we know density of one fcc cube is 14/a**3 units/m3
