@@ -45,9 +45,9 @@ class Particles(object):
         # translate the particles outside of the box
         # +boxSize if positionComponent < 0, -boxSize if positionComponent > 5
         posTranslation = self.positions < 0
-        negTranslation = self.positions > var.boxSize
-        self.positions[posTranslation] += var.boxSize
-        self.positions[negTranslation] -= var.boxSize
+        negTranslation = self.positions > boxSize
+        self.positions[posTranslation] += boxSize
+        self.positions[negTranslation] -= boxSize
 
 
     def updateVelocities(self, dT):
