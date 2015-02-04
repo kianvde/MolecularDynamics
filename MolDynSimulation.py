@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 
 class MolDynSimulation(object) :
 
@@ -7,8 +7,8 @@ class MolDynSimulation(object) :
     dimension = 2
 
     # position and velocity vectors for the particles
-    particlePos = numpy.zeros([numParticles,dimension])
-    particleVel = numpy.zeros([numParticles,dimension])
+    particlePos = np.zeros([numParticles,dimension])
+    particleVel = np.zeros([numParticles,dimension])
 
     # all the initialization functions are called in this block
     def __init__(self) :
