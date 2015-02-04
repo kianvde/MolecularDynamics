@@ -1,24 +1,22 @@
-import numpy as np
-import variables as var
+import Particles
 
 class MolDynSimulation(object) :
 
-    # move to parameter file
-    numParticles = 1000
-    dimension = 2
-
-    # position and velocity vectors for the particles
-    particlePos = np.zeros([var.numParticles, var.dimension])
-    particleVel = np.zeros([var.numParticles, var.dimension])
-
+    particles = Particles
     # all the initialization functions are called in this block
     def __init__(self) :
+        self.particles = Particles()
         pass
 
 
     # start of the simulation
     def start(self):
+
+        # simulation loop
         while (True):
+
+            # update particles
+            self.particles.update()
             pass
 
 
