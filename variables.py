@@ -1,14 +1,21 @@
 ### the variables used in the simulation stored in a single file
 
-
+## imports
+import variables as var
+import numpy as np
 
 ## constants
 # dimensionality of the system
-dimension = 2
+dimension = 3
 
 # number of particles in the system
 numParticles = 1000
 
+# time step
+deltaT = 1
+
+# length of the box side of the box
+boxSize = 5
 
 ## classes
 class Particles(object):
