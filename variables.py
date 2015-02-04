@@ -26,7 +26,7 @@ a = 1
 epsi = 1.0
 
 # Lennard-Jones distance at which potential is minimal
-r_min = 1.0
+r_min = 2.0**(1.0/6.0)
 
 ## classes
 class Particles(object):

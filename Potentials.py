@@ -22,9 +22,9 @@ def Len_Jones(Pos_mat):
     # Replace zeros by infinity to avoid division by zero
     diff_squaresum = (diff_squaresum == 0).choose(diff_squaresum,float("inf"))
     # Calculate potential and forces using Lennard-Jones
-    Potential_vec = var.epsi * ( (var.r_min**6 / diff_squaresum**6) - (var.r_min**6 / diff_squaresum**3) )
+    Potential_vec = var.epsi * ( (var.r_min**12 / diff_squaresum**6) - 2.0 * (var.r_min**6 / diff_squaresum**3) )
     Potential = 0.5 * np.sum(Potential_vec,axis=None)
-    Force_factor = var.epsi * ( (12.0 * var.r_min**7 / diff_squaresum**7) - (6.0 * var.r_min**4 / diff_squaresum**4) )
+    Force_factor = 6.0 * var.epsi * ( (var.r_min**12 / diff_squaresum**7) - (var.r_min**6 / diff_squaresum**4) )
     # Create a N x 3*N matrix for the force factor
     Force_factor = Force_factor.repeat(shape[1])
     Force_factor = np.reshape(Force_factor,(shape[0],shape[0]*shape[1]))
