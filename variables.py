@@ -5,7 +5,7 @@ import numpy as np
 
 ## constants
 # dimensionality of the system
-dimension = 3.
+dimension = 3
 
 # number of particles in the system
 numParticlesAxis = 10
@@ -21,7 +21,7 @@ boxSize = 5.
 T = 300
 
 # Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
-a = 1
+a = 0.1
 
 # Lennard-Jones depth of potential well
 eps = 1.0
@@ -36,28 +36,28 @@ class Particles(object):
     # initialize the particles
     def __init__(self):
 
-        #TODO implement raster distribution
-        self.positions = np.zeros((numParticles, dimension))
-
-        #TODO implement velocity distribution
+        self.initPositions()
         self.initVelocities()
-    def set_init_pos(self):
+
+    def initPositions(self):
         #Using cubic lattice
         #volumeBox   = boxSize**dimension
 
+        self.positions = np.zeros((numParticles,dimension))
+        print self.positions
         numAxis = float(numParticlesAxis)
         increment = int(round(numAxis))
         posAxis     = np.arange(0,numAxis)/numAxis * boxSize
         k=0
         for j in range(0,numParticles,increment):
-            positions[j:j+increment, 0] = posAxis       #For every n particles that are on an axis, set coordinates of those n. Coords are in posAxis.
+            self.positions[j:j+increment, 0] = posAxis       #For every n particles that are on an axis, set coordinates of those n. Coords are in posAxis.
                                                         #Let's say these are the x coords, then we have x0,x1..xn,x0,x1...xn etc.
-            if np.mod(j,increment**2)==0:               #Here add the 'z' coordinates after n**2
-                positions[j:j+increment**2, 2] = np.array([posAxis[k]]*increment**2)
+            if (j%increment)==0:               #Here add the 'z' coordinates after n**2
+                self.positions[j:j+increment**2, 2] = np.array([posAxis[k]]*increment**2)
                 k+=1
                 i = 0
-            if np.mod(j,increment)==0:                  #Add the 'y' coordinates, after n repetitions of x0->xn
-                positions[j:j+increment, 1] = np.array([posAxis[i]]*increment)
+            if (j%increment)==0:                  #Add the 'y' coordinates, after n repetitions of x0->xn
+                self.positions[j:j+increment, 1] = np.array([posAxis[i]]*increment)
                 i += 1
         #Using fcc lattice, we know density of one fcc cube is 14/a**3 units/m3
         #volumeBox   = boxSize**dimension
@@ -67,7 +67,6 @@ class Particles(object):
     # update the particles
     def update(self, dT):
 
-        #TODO implement update functions
         self.updateParticles(dT)
         self.updateVelocities(dT)
 

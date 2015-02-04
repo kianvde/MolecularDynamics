@@ -11,12 +11,14 @@ class MolDynSimulation(object) :
 
     # start of the simulation
     def start(self):
-
+        np.set_printoptions(precision = 2)
+        print(self.particles.positions)
         # simulation loop
         for i in range(0, 15):
 
             # update particles
             self.particles.update(var.deltaT)
+
 
 
 # init and loop
