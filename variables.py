@@ -24,22 +24,21 @@ class Particles(object):
     # initialize the particles
     def __init__(self):
 
-        # initiate positions and velocities vectors
-        self.positions = np.empty()
-        self.velocities = np.empty()
-
         #TODO implement raster distribution
-        positions = np.empty(var.numParticles, var.dimension)
+        self.positions = np.zeros((var.numParticles, var.dimension))
 
         #TODO implement velocity distribution
-        velocities = np.empty(var.numParticles, var.dimension)
+        self.velocities = np.ones((var.numParticles, var.dimension))
 
     # update the particles
-    def update(self):
-        pass
+    def update(self, dT):
+
         #TODO implement update functions
-        # updateParticles(self)
+        self.updateParticles(dT)
         # updateVelocities
 
-#   def updateParticles(self)
+    # update the particle positions
+    def updateParticles(self, dT):
+        self.positions += self.velocities * dT
+
 #   def updateVelocities(self)
