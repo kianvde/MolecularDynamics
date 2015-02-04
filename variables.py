@@ -1,7 +1,6 @@
 ### the variables used in the simulation stored in a single file
 
 ## imports
-import variables as var
 import numpy as np
 
 ## constants
@@ -17,6 +16,12 @@ deltaT = 1
 # length of the box side of the box
 boxSize = 5
 
+# Temperature (in Kelvin)
+T = 300
+
+# Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
+a = 1
+
 ## classes
 class Particles(object):
 
@@ -25,10 +30,10 @@ class Particles(object):
     def __init__(self):
 
         #TODO implement raster distribution
-        self.positions = np.zeros((var.numParticles, var.dimension))
+        self.positions = np.zeros((numParticles, dimension))
 
         #TODO implement velocity distribution
-        self.velocities = np.ones((var.numParticles, var.dimension))
+        self.initVelocities()
 
     # update the particles
     def update(self, dT):
@@ -58,6 +63,15 @@ class Particles(object):
         # out -> forceVectors (FORCE)
         #
         # both numParticles by dimension matrices
-        FORCE = 0.1
+        FORCE = 0.
 
         self.velocities += FORCE * (dT**2)
+
+
+    def initVelocities(self):
+
+        # initiate velocities components according to MB distribution for the
+        # speed
+        # (i.e. Gaussian distribution with mean=0 and sigma(=a)=sqrt(3kT/m) for the
+        # velocity components
+        self.velocities = np.random.normal(0., a, (numParticles,dimension))

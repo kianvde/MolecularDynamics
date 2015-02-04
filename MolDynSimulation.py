@@ -17,10 +17,6 @@ class MolDynSimulation(object) :
 
             # update particles
             self.particles.update(var.deltaT)
-            print(self.particles.positions[0,0])
-
-
-
 
 
 # init and loop
