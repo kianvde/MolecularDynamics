@@ -1,14 +1,21 @@
 ### the variables used in the simulation stored in a single file
 
-
+## imports
+import variables as var
+import numpy as np
 
 ## constants
 # dimensionality of the system
-dimension = 2
+dimension = 3
 
 # number of particles in the system
 numParticles = 1000
 
+# time step
+deltaT = 1
+
+# length of the box side of the box
+boxSize = 5
 
 ## classes
 class Particles(object):
@@ -17,22 +24,21 @@ class Particles(object):
     # initialize the particles
     def __init__(self):
 
-        # initiate positions and velocities vectors
-        self.positions = np.empty()
-        self.velocities = np.empty()
-
         #TODO implement raster distribution
-        positions = np.empty(var.numParticles, var.dimension)
+        self.positions = np.zeros((var.numParticles, var.dimension))
 
         #TODO implement velocity distribution
-        velocities = np.empty(var.numParticles, var.dimension)
+        self.velocities = np.ones((var.numParticles, var.dimension))
 
     # update the particles
-    def update(self):
-        pass
+    def update(self, dT):
+
         #TODO implement update functions
-        # updateParticles(self)
+        self.updateParticles(dT)
         # updateVelocities
 
-#   def updateParticles(self)
+    # update the particle positions
+    def updateParticles(self, dT):
+        self.positions += self.velocities * dT
+
 #   def updateVelocities(self)
