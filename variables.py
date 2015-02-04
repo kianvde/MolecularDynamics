@@ -35,10 +35,29 @@ class Particles(object):
 
         #TODO implement update functions
         self.updateParticles(dT)
-        # updateVelocities
+        self.updateVelocities(dT)
 
     # update the particle positions
     def updateParticles(self, dT):
+
         self.positions += self.velocities * dT
 
-#   def updateVelocities(self)
+        # translate the particles outside of the box
+        # +boxSize if positionComponent < 0, -boxSize if positionComponent > 5
+        posTranslation = self.positions < 0
+        negTranslation = self.positions > var.boxSize
+        self.positions[posTranslation] += var.boxSize
+        self.positions[negTranslation] -= var.boxSize
+
+
+    def updateVelocities(self, dT):
+
+        # TODO calculate forces on particles with the positions (Leo):
+        # function:
+        # in -> positionVectors (self.position)
+        # out -> forceVectors (FORCE)
+        #
+        # both numParticles by dimension matrices
+        FORCE = 0.1
+
+        self.velocities += FORCE * (dT**2)

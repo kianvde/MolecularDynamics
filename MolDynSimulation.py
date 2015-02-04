@@ -1,4 +1,5 @@
 import variables as var
+import numpy as np
 
 class MolDynSimulation(object) :
 
@@ -12,11 +13,13 @@ class MolDynSimulation(object) :
     def start(self):
 
         # simulation loop
-        while (True):
+        for i in range(0, 15):
 
             # update particles
-            self.particles.update()
-            pass
+            self.particles.update(var.deltaT)
+            print(self.particles.positions[0,0])
+
+
 
 
 
