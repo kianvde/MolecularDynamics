@@ -4,41 +4,36 @@
 import numpy as np
 
 ## constants
-# dimensionality of the system
-dimension = 3
 
 # number of particles in the system
 numParticlesAxis = 10
 numParticles = numParticlesAxis**3
 
-# time step
-deltaT = 1.
+deltaT = 1.             # time step
+dimension = 3           # dimensionality of the system
+boxSize = 5.            # length of the (cubic) box side
+T = 300                 # Temperature (in Kelvin)
+a = 0.1                 # Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
 
-# length of the box side of the box
-boxSize = 5.
+# Lennard-Jones
+eps = 1.0               # depth of potential well
+rMin = 2.0**(1.0/6.0)   # distance at which potential is minimal
 
-# Temperature (in Kelvin)
-T = 300
+# fraction from the edge of the box translated and used for force calculation
+forceCalculationFraction = 0.2                  # fraction
+imageSize = forceCalculationFraction*boxSize    # size
 
-# Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
-a = 0.1
-
-# Lennard-Jones depth of potential well
-eps = 1.0
-
-# Lennard-Jones distance at which potential is minimal
-rMin = 2.0**(1.0/6.0)
-
-## classes
+## particles class
 class Particles(object):
 
 
-    # initialize the particles
+    ## initialization ##
     def __init__(self):
 
         self.initPositions()
         self.initVelocities()
 
+    # initialize the particle positions
     def initPositions(self):
         #Using cubic lattice
         #volumeBox   = boxSize**dimension
@@ -63,7 +58,17 @@ class Particles(object):
         #partDenisty = numParticles/volumeBox
         #sideFcc     = (14./partDenisty)**(1./3)
 
-    # update the particles
+    # initialize the particle velocities
+    def initVelocities(self):
+
+        # initiate velocities components according to MB distribution for the
+        # speed
+        # (i.e. Gaussian distribution with mean=0 and std(=a)=sqrt(3kT/m) for the
+        # velocity components
+        self.velocities = np.random.normal(0., a, (numParticles,dimension))
+
+
+    ## update functions ##
     def update(self, dT):
 
         self.updateParticles(dT)
@@ -81,24 +86,53 @@ class Particles(object):
         self.positions[posTranslation] += boxSize
         self.positions[negTranslation] -= boxSize
 
-
+    # update the particle velocities
     def updateVelocities(self, dT):
 
-        # TODO calculate forces on particles with the positions (Leo):
-        # function:
-        # in -> positionVectors (self.position)
-        # out -> forceVectors (FORCE)
-        #
-        # both numParticles by dimension matrices
+
         FORCE = 0.
 
         self.velocities += FORCE * (dT**2)
 
 
-    def initVelocities(self):
+    ## helper functions ##
 
-        # initiate velocities components according to MB distribution for the
-        # speed
-        # (i.e. Gaussian distribution with mean=0 and sigma(=a)=sqrt(3kT/m) for the
-        # velocity components
-        self.velocities = np.random.normal(0., a, (numParticles,dimension))
+    # get the particles within a distance imageSize from the box boundaries and translate them to outside
+    # the box for force computation to simulate an infinite volume
+    #
+    # return -> a by d matrix with all the imaged particles
+    def getTranslatedImages(self):
+
+        p = self.positions                          # original particle position matrix
+        t = np.zeros((np.shape(p)))                 # matrix containing translation values per coordinate
+        t[p < imageSize] = boxSize
+        t[p > boxSize - imageSize] = -boxSize
+        tBool = t != 0
+        numWalls = np.sum(tBool, axis=1)             # number of walls the particle is close to
+
+        # select cases with one or more translations and add translations and translate
+        # all coordinates close to the wall
+        translatedImages = p[numWalls >= 1, :] + t[numWalls >= 1, :]
+
+        # select cases with two or more translations and translate for single
+        # coordinates close to the wall
+        p2 = p[numWalls >= 2, :]
+        t2 = t[numWalls >=2, :]
+
+        for column in range(3):
+            pCol = p2[:,column]
+            tCol = t2[:,column]
+            pConcat = p2[tCol != 0, :]
+            pConcat[:, column] += tCol[tCol != 0]
+            translatedImages = np.concatenate((translatedImages, pConcat), axis=0)
+
+        # select cases with 3 translations and translate for two
+        # coordinates close to the wall
+        p3 = p[numWalls == 3, :]
+        t3 = t [numWalls == 3, :]
+        for column in range(3):
+            t2Col = t3.copy()
+            t2Col[:, column] = 0
+            translatedImages = np.concatenate((translatedImages, p3 + t2Col), axis=0)
+
+        return translatedImages
