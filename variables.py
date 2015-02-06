@@ -10,20 +10,20 @@ import Potentials as Pot
 dimension = 3
 
 # number of particles in the system
-numParticlesAxis = 2
+numParticlesAxis = 10
 numParticles = numParticlesAxis**3
 
 # time step
 deltaT = 100.0 # 1 microsecond, time step in ps, rescale the rest to fit
 
 # length of the box side of the box
-boxSize = 1.0 # Box size in nm, rescale everything else to fit
+boxSize = 100.0 # Box size in nm, rescale everything else to fit
 
 # part of the box used for particle imaging improving field
 imageSize = 0.2*boxSize
 
 # Temperature (in Kelvin)
-T = 1.0
+T = 100.0
 
 # Mass
 m = 6.64648*10**(-27) # 6.64648*10**(-27) kg
@@ -32,7 +32,7 @@ m = 6.64648*10**(-27) # 6.64648*10**(-27) kg
 kB = 1.3806488*10**(-29) # kB = 1.38*10^-29 [nm^2 kg ps^-2 K^-1]
 
 # Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
-a = (3.0 * kB * T) / m
+a = ((kB * T) / m)**0.5
 
 # Lennard-Jones depth of potential well
 eps = 10.22 * 10**(-6) * kB # Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22
@@ -50,6 +50,10 @@ class Particles(object):
 
         self.initPositions()
         self.initVelocities()
+        self.force = np.zeros(np.shape(self.positions))
+        self.energy = 0
+        self.potential = 0
+        self.temperature = T
 
     # initialize the particle positions
     def initPositions(self):
@@ -89,13 +93,18 @@ class Particles(object):
     ## update functions ##
     def update(self, dT):
 
-        self.updateVelocities(dT)
         self.updateParticles(dT)
+        self.updateVelFor(dT)
+
+        vel2 = self.velocities**2
+        vel2sum = np.sum(vel2,axis=None)
+        self.energy = (0.5 * m * vel2sum + self.potential) * 10**6 # Energy in Joule
+        self.temperature = (2.0/3.0) * (0.5 * m * vel2sum) / (numParticles * kB)  # Paper Verlet 1967
 
     # update the particle positions
     def updateParticles(self, dT):
 
-        self.positions += self.velocities * dT
+        self.positions += self.velocities * dT + 0.5 * (self.force / m) * (dT**2)
 
         # translate the particles outside of the box
         # +boxSize if positionComponent < 0, -boxSize if positionComponent > 5
@@ -104,8 +113,8 @@ class Particles(object):
         self.positions[posTranslation] += boxSize
         self.positions[negTranslation] -= boxSize
 
-    # update the particle velocities
-    def updateVelocities(self, dT):
+    # update the particle velocities and forces
+    def updateVelFor(self, dT):
 
         # TODO calculate forces on particles with the positions (Leo):
         # function:
@@ -113,10 +122,16 @@ class Particles(object):
         # out -> forceVectors (FORCE)
         #
         # both numParticles by dimension matrices
-        FORCE, Potential = Pot.Len_Jones(self.positions)
 
+        self.velocities += 0.5 * (self.force / m) * dT
+        self.force, self.potential = Pot.Len_Jones(self.positions)
+        self.velocities += 0.5 * (self.force / m) * dT
 
-        self.velocities += FORCE / m * dT
+    # Currently unused!!
+    def updateForce(self):
+
+        self.force, self.potential = Pot.Len_Jones(self.positions)
+
 
 
     ## helper functions ##
