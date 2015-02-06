@@ -49,9 +49,9 @@ class Particles(object):
         posAxis     = np.arange(0,numAxis)/numAxis * boxSize
         k=0
         for j in range(0,numParticles,increment):
-            self.positions[j:j+increment, 0] = posAxis       #For every n particles that are on an axis, set coordinates of those n. Coords are in posAxis.
-                                                        #Let's say these are the x coords, then we have x0,x1..xn,x0,x1...xn etc.
-            if (j%increment**2)==0:               #Here add the 'z' coordinates after n**2
+            self.positions[j:j+increment, 0] = posAxis      #For every n particles that are on an axis, set coordinates of those n. Coords are in posAxis.
+                                                            #Let's say these are the x coords, then we have x0,x1..xn,x0,x1...xn etc.
+            if (j%increment**2)==0:                         #Here add the 'z' coordinates after n**2
                 self.positions[j:j+increment**2, 2] = np.array([posAxis[k]]*increment**2)
                 k+=1
                 i = 0
@@ -92,7 +92,7 @@ class Particles(object):
         # both numParticles by dimension matrices
         FORCE = 0.
 
-        self.velocities += FORCE * (dT**2)
+        self.velocities += FORCE * (dT)
 
 
     def initVelocities(self):
