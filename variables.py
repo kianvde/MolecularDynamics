@@ -14,19 +14,19 @@ numParticlesAxis = 2
 numParticles = numParticlesAxis**3
 
 # time step
-deltaT = 1.0 # 1 microsecond, time step in ps, rescale the rest to fit
+deltaT = 100.0 # 1 microsecond, time step in ps, rescale the rest to fit
 
 # length of the box side of the box
-boxSize = 50. # Box size in nm, rescale everything else to fit
+boxSize = 1.0 # Box size in nm, rescale everything else to fit
 
 # Temperature (in Kelvin)
-T = 300
+T = 1.0
 
 # Mass
 m = 6.64648*10**(-27) # 6.64648*10**(-27) kg
 
 # Boltzmann constant
-kB = 1.3806488*10**(-29) # kB = 1.38*10^-5 [nm^2 kg ps^-2 K^-1]
+kB = 1.3806488*10**(-29) # kB = 1.38*10^-29 [nm^2 kg ps^-2 K^-1]
 
 # Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
 a = (3.0 * kB * T) / m
@@ -75,8 +75,8 @@ class Particles(object):
     # update the particles
     def update(self, dT):
 
-        self.updateParticles(dT)
         self.updateVelocities(dT)
+        self.updateParticles(dT)
 
     # update the particle positions
     def updateParticles(self, dT):
