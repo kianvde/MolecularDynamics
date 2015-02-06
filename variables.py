@@ -5,6 +5,7 @@ import numpy as np
 import Potentials as Pot
 
 ## constants
+## Constants are given in nm, ps units (i.e distance 1 = 1 nm, time 1 = 1 ps)
 # dimensionality of the system
 dimension = 3
 
@@ -13,22 +14,29 @@ numParticlesAxis = 10
 numParticles = numParticlesAxis**3
 
 # time step
-deltaT = 1.
+deltaT = 1.*10**6 # 1 microsecond, time step in ps, rescale the rest to fit
 
 # length of the box side of the box
-boxSize = 5.
+boxSize = 50. # Box size in nm, rescale everything else to fit
 
 # Temperature (in Kelvin)
 T = 300
 
+# Mass
+m = 6.64648*10**(-27) # 6.64648*10**(-27) kg
+
+# Boltzmann constant
+kB = 1.3806488*10**(-29) # kB = 1.38*10^-5 [nm^2 kg ps^-2 K^-1]
+
 # Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
-a = 0.1
+a = (3.0 * kB * T) / m
 
 # Lennard-Jones depth of potential well
-eps = 1.0
+eps = 10.22 * 10**(-6) * kB # Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22
+# eps = [J] = [kg m^2 s^-2] = 10^-6 [kg nm^2 ps^-2]
 
 # Lennard-Jones distance at which potential is minimal
-rMin = 2.0**(1.0/6.0)
+rMin = 0.2869 # Helium Cyrogenics - Steven van Sciver, rMin = 0.2869 nm
 
 ## classes
 class Particles(object):
@@ -93,7 +101,7 @@ class Particles(object):
         # both numParticles by dimension matrices
         FORCE, Potential = Pot.Len_Jones(self.positions)
 
-        self.velocities += FORCE * dT
+        self.velocities += FORCE / m * dT
 
 
     def initVelocities(self):
