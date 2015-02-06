@@ -14,7 +14,7 @@ numParticlesAxis = 10
 numParticles = numParticlesAxis**3
 
 # time step
-deltaT = 1.*10**6 # 1 microsecond, time step in ps, rescale the rest to fit
+deltaT = 1.0 # 1 microsecond, time step in ps, rescale the rest to fit
 
 # length of the box side of the box
 boxSize = 50. # Box size in nm, rescale everything else to fit
