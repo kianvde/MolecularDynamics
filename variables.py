@@ -19,6 +19,9 @@ deltaT = 100.0 # 1 microsecond, time step in ps, rescale the rest to fit
 # length of the box side of the box
 boxSize = 1.0 # Box size in nm, rescale everything else to fit
 
+# part of the box used for particle imaging improving field
+imageSize = 0.2*boxSize
+
 # Temperature (in Kelvin)
 T = 1.0
 
