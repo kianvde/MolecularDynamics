@@ -2,6 +2,7 @@
 
 ## imports
 import numpy as np
+import Potentials as Pot
 
 ## constants
 # dimensionality of the system
@@ -90,9 +91,9 @@ class Particles(object):
         # out -> forceVectors (FORCE)
         #
         # both numParticles by dimension matrices
-        FORCE = 0.
+        FORCE, Potential = Pot.Len_Jones(self.positions)
 
-        self.velocities += FORCE * (dT**2)
+        self.velocities += FORCE * dT
 
 
     def initVelocities(self):

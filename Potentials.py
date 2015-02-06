@@ -13,8 +13,7 @@ import variables as var
 def Len_Jones(positions):
 
     # get the shape of the positions matrix (N,3)
-    shape = np.shape(positions)
-    (N, d) = shape
+    (N, d) = np.shape(positions)
 
     # Copy the position matrix N times resulting in a N by 3N matrix
     repPositions1 = np.kron(np.ones((1,N)),positions)
@@ -51,7 +50,7 @@ def Len_Jones(positions):
     # Get the force on each particle by summing contributions of all particles
     force = np.sum(forceMagnitude,axis=0)
     # Reshape to a N x 3 matrix
-    force = np.reshape(force, shape)
+    force = np.reshape(force, (N,d))
 
     return force, potentialEnergy
 
