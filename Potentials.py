@@ -19,7 +19,7 @@ def Len_Jones(positions):
     # Copy the position matrix N times resulting in a N by 3N matrix
     repPositions1 = np.kron(np.ones((1,N)),positions)
 
-    # make a length 3N row vector by pasting the position vectors behind eachother then paste
+    # make a length 3N row vector by pasting the position vectors behind each other then paste
     # N times in another N by 3N matrix
     rowPositions = np.reshape(positions,(1,N*d))
     repPositions2 = np.kron(np.ones((N,1)),rowPositions)
