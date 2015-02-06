@@ -6,15 +6,12 @@ import matplotlib.animation as animation
 
 class Animate(object):
 
-    def __init__(self, boxSize):
+    def __init__(self, boxSize, sizeSimulation, dims, numParticles):
         self.boxSize = boxSize
+        self.lineData = np.zeros((numParticles, dims, sizeSimulation))
 
-
-    def buildLines(self, loopcount, sizeSimulation, dims, positions, numParticles):
-        lineData = np.empty((numParticles, dims, sizeSimulation))
-        lineData[:,:, loopcount] = positions
-        self.lineData = lineData
-        return lineData
+    def buildLines(self, loopcount, positions):
+        self.lineData[:,:, loopcount] = positions
 
     def update_lines(self, num, dataLines, lines) :
         for line, data in zip(lines, dataLines) :
@@ -40,6 +37,6 @@ class Animate(object):
         ax.set_title('3D Test')
 
         line_ani = animation.FuncAnimation(fig, self.update_lines, 25, fargs=(self.lineData, lines),
-                                      interval=50, blit=False)
+                                      interval=1000, blit=False)
 
         plt.show()
