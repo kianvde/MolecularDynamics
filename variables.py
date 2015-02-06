@@ -47,6 +47,9 @@ class Particles(object):
 
         self.initPositions()
         self.initVelocities()
+        self.force = np.zeros(np.shape(self.positions))
+        self.energy = 0
+        self.potential = 0
 
     def initPositions(self):
         #Using cubic lattice
@@ -75,13 +78,17 @@ class Particles(object):
     # update the particles
     def update(self, dT):
 
-        self.updateVelocities(dT)
         self.updateParticles(dT)
+        self.updateVelFor(dT)
+
+        vel2 = self.velocities**2
+        vel2sum = np.sum(vel2,axis=None)
+        self.energy = 0.5 * m * vel2sum + self.potential
 
     # update the particle positions
     def updateParticles(self, dT):
 
-        self.positions += self.velocities * dT
+        self.positions += self.velocities * dT + 0.5 * (self.force / m) * (dT**2)
 
         # translate the particles outside of the box
         # +boxSize if positionComponent < 0, -boxSize if positionComponent > 5
@@ -91,7 +98,7 @@ class Particles(object):
         self.positions[negTranslation] -= boxSize
 
 
-    def updateVelocities(self, dT):
+    def updateVelFor(self, dT):
 
         # TODO calculate forces on particles with the positions (Leo):
         # function:
@@ -99,10 +106,16 @@ class Particles(object):
         # out -> forceVectors (FORCE)
         #
         # both numParticles by dimension matrices
-        FORCE, Potential = Pot.Len_Jones(self.positions)
 
+        self.velocities += 0.5 * (self.force / m) * dT
+        self.force, self.potential = Pot.Len_Jones(self.positions)
+        self.velocities += 0.5 * (self.force / m) * dT
 
-        self.velocities += FORCE / m * dT
+    # Currently unused!!
+    def updateForce(self):
+
+        self.force, self.potential = Pot.Len_Jones(self.positions)
+
 
 
     def initVelocities(self):
