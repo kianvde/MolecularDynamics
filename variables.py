@@ -48,8 +48,8 @@ class Particles(object):
     ## initialization ##
     def __init__(self):
 
-        self.initPositions()
-        self.initVelocities()
+        self.initposs = self.initPositions()
+        self.initvelocc = self.initVelocities()
         self.force = np.zeros(np.shape(self.positions))
         self.energy = 0
         self.potential = 0
@@ -78,6 +78,7 @@ class Particles(object):
         #volumeBox   = boxSize**dimension
         #partDenisty = numParticles/volumeBox
         #sideFcc     = (14./partDenisty)**(1./3)
+        return self.positions
 
     # initialize the particle velocities
     def initVelocities(self):
@@ -87,7 +88,7 @@ class Particles(object):
         # (i.e. Gaussian distribution with mean=0 and std(=a)=sqrt(3kT/m) for the
         # velocity components
         self.velocities = np.random.normal(0., a, (numParticles,dimension))
-
+        return self.velocities
 
     ## update functions ##
     def update(self, dT):
