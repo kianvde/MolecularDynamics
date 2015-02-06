@@ -2,7 +2,7 @@
 import numpy as np
 import variables as var
 
-# Leonard - Jones, sigma and epsilon not yet chosen!
+# Lennard - Jones, sigma and epsilon not yet chosen!
 # WARNING: Code is vectorised, i.e. it trades memory for speed. If memory becomes an issue, remove matrixes after they
 # have been used, as the code creates multiple size 3*N^2 matrices for calculations
 
