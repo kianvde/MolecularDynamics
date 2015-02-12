@@ -10,7 +10,7 @@ import Potentials as Pot
 dimension = 3
 
 # number of particles in the system
-numParticlesAxis = 2
+numParticlesAxis = 8
 numParticles = numParticlesAxis**3
 
 # time step
