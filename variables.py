@@ -14,7 +14,7 @@ numParticlesAxis = 5
 numParticles = numParticlesAxis**3
 
 # time step
-deltaT = 10.0 # 1 microsecond, time step in ps, rescale the rest to fit
+deltaT = 10.0 # Time step in ps, rescale the rest to fit
 
 # length of the box side of the box
 boxSize = 100.0 # Box size in nm, rescale everything else to fit
@@ -85,7 +85,7 @@ class Particles(object):
     def initVelocities(self):
 
         # initiate velocities components according to MB distribution for the
-        # speed
+        # speed, in nm / ps
         # (i.e. Gaussian distribution with mean=0 and std(=a)=sqrt(3kT/m) for the
         # velocity components
         self.velocities = np.random.normal(0., a, (numParticles,dimension))
