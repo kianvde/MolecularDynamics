@@ -10,11 +10,11 @@ import Potentials as Pot
 dimension = 3
 
 # number of particles in the system
-numParticlesAxis = 5
+numParticlesAxis = 3
 numParticles = numParticlesAxis**3
 
 # time step
-deltaT = 10.0 # 1 microsecond, time step in ps, rescale the rest to fit
+deltaT = .1 # 1 microsecond, time step in ps, rescale the rest to fit
 
 # length of the box side of the box
 boxSize = 100.0 # Box size in nm, rescale everything else to fit
@@ -23,7 +23,7 @@ boxSize = 100.0 # Box size in nm, rescale everything else to fit
 imageSize = 0.2*boxSize
 
 # Temperature (in Kelvin)
-T = .1
+T = 1.
 
 # Mass
 m = 6.64648*10**(-27) # 6.64648*10**(-27) kg

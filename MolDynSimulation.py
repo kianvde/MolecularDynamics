@@ -15,7 +15,7 @@ class MolDynSimulation(object) :
         np.set_printoptions(precision = 2)
         print(self.particles.positions)
         # Number of simulation loops
-        loops = 1000
+        loops = 10000
         #Create animation object
         #self.animation = an.Animate(var.boxSize, loops, var.dimension, var.numParticles)
         self.animation = an.VpyAnimate(self.particles, loops)

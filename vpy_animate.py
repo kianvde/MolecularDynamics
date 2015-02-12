@@ -41,7 +41,12 @@ class VpyAnimate(object):
                 for j in range(var.numParticles):
                     self.balls[j].pos = vector(self.x[j,i],self.y[j,i],self.z[j,i])
 
-
+    def plot_animm(self, positions):
+        self.x = positions[:,0]
+        self.y = positions[:,1]
+        self.z = positions[:,2]
+        for j in range(var.numParticles):
+            self.balls[j].pos = vector(self.x[j],self.y[j],self.z[j])
 
 
 
