@@ -9,8 +9,10 @@ class VpyAnimate(object):
         self.particles = particles
         self.posMatrix = np.empty((var.numParticles, var.dimension, loops))
         self.speed = 20
+        self.sphereRadius = var.boxSize/30.
+        self.init_box()
         self.init_balls()
-    # wallR = box (pos=(0,0,0), size=(var.boxSize,var.boxSize,var.boxSize), color = color.green)
+
 
 
 
@@ -18,9 +20,13 @@ class VpyAnimate(object):
     def init_balls(self):
         self.balls = []
         for i in range(var.numParticles):
-            self.balls = self.balls + [sphere(radius=var.boxSize/30., color=color.red)]
+            self.balls = self.balls + [sphere(radius=self.sphereRadius, color=color.red)]
             self.balls[i].pos = vector(self.particles.initposs[i,0],self.particles.initposs[i,1],self.particles.initposs[i,2])
             #balls[i].velocity = vector(self.particles.initvelocc[i,0],self.particles.initvelocc[i,1],self.particles.initvelocc[i,2])
+    def init_box(self):
+        bSize = var.boxSize+self.sphereRadius
+        wallR = box (pos=(var.boxSize/2.,var.boxSize/2.,var.boxSize/2.), size=(bSize,bSize,bSize), color = color.blue, opacity = 0.3)
+
 
     def buildCoords(self, loopcount, positions):
          self.posMatrix[:, :, loopcount] = positions

@@ -14,7 +14,7 @@ numParticlesAxis = 5
 numParticles = numParticlesAxis**3
 
 # time step
-deltaT = 100.0 # 1 microsecond, time step in ps, rescale the rest to fit
+deltaT = 10.0 # 1 microsecond, time step in ps, rescale the rest to fit
 
 # length of the box side of the box
 boxSize = 100.0 # Box size in nm, rescale everything else to fit
@@ -23,7 +23,7 @@ boxSize = 100.0 # Box size in nm, rescale everything else to fit
 imageSize = 0.2*boxSize
 
 # Temperature (in Kelvin)
-T = .001
+T = .1
 
 # Mass
 m = 6.64648*10**(-27) # 6.64648*10**(-27) kg
