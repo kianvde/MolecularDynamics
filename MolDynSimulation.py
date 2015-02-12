@@ -15,14 +15,14 @@ class MolDynSimulation(object) :
         np.set_printoptions(precision = 2)
         print(self.particles.positions)
         # Number of simulation loops
-        loops = 10
+        loops = 1000
         #Create animation object
         #self.animation = an.Animate(var.boxSize, loops, var.dimension, var.numParticles)
         self.animation = an.VpyAnimate(self.particles, loops)
 
         for i in range(loops):
             #Build coordinate matrix for every iteration of the loop
-            #self.animation.buildCoords(i, self.particles.positions)
+            self.animation.buildCoords(i, self.particles.positions)
             # update particles
             self.particles.update(var.deltaT)
         #Resize axis and do animation

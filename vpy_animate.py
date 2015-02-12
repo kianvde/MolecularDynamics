@@ -6,7 +6,7 @@ class VpyAnimate(object):
 
     def __init__(self, particles, loops):
         self.particles = particles
-        self.lineData = np.empty((var.numParticles, var.dimension, loops))
+        self.posMatrix = np.empty((var.numParticles, var.dimension, loops))
         self.init_balls()
     # wallR = box (pos=(0,0,0), size=(var.boxSize,var.boxSize,var.boxSize), color = color.green)
 
@@ -14,18 +14,26 @@ class VpyAnimate(object):
 
 
     def init_balls(self):
-        balls = []
+        self.balls = []
         for i in range(var.numParticles):
-            balls = balls + [sphere(radius=var.boxSize/30., color=color.orange)]
-            balls[i].pos = vector(self.particles.initposs[i,0],self.particles.initposs[i,1],self.particles.initposs[i,2])
-            balls[i].velocity = vector(self.particles.initvelocc[i,0],self.particles.initvelocc[i,1],self.particles.initvelocc[i,2])
+            self.balls = self.balls + [sphere(radius=var.boxSize/30., color=color.red)]
+            self.balls[i].pos = vector(self.particles.initposs[i,0],self.particles.initposs[i,1],self.particles.initposs[i,2])
+            #balls[i].velocity = vector(self.particles.initvelocc[i,0],self.particles.initvelocc[i,1],self.particles.initvelocc[i,2])
 
     def buildCoords(self, loopcount, positions):
-         self.lineData[:, :, loopcount] = positions
-         self.x = self.lineData[:, 0, :]
-         self.y = self.lineData[:, 1, :]
-         self.z = self.lineData[:, 2, :]
+         self.posMatrix[:, :, loopcount] = positions
 
-    #def plot_anim(self):
-     #   for i in np.shape(self.x)[1]:
+    def plot_anim(self):
+        self.x = self.posMatrix[:, 0, :] # Npoint , dimension, frame
+        self.y = self.posMatrix[:, 1, :]
+        self.z = self.posMatrix[:, 2, :]
+        while 1:
+            for i in range(np.shape(self.x)[1]):
+                rate(20)
+                for j in range(var.numParticles):
+                    self.balls[j].pos = vector(self.x[j,i],self.y[j,i],self.z[j,i])
+
+
+
+
 

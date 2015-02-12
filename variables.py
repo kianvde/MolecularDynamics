@@ -10,7 +10,7 @@ import Potentials as Pot
 dimension = 3
 
 # number of particles in the system
-numParticlesAxis = 8
+numParticlesAxis = 5
 numParticles = numParticlesAxis**3
 
 # time step
@@ -23,7 +23,7 @@ boxSize = 100.0 # Box size in nm, rescale everything else to fit
 imageSize = 0.2*boxSize
 
 # Temperature (in Kelvin)
-T = 100.0
+T = .001
 
 # Mass
 m = 6.64648*10**(-27) # 6.64648*10**(-27) kg
@@ -35,7 +35,7 @@ kB = 1.3806488*10**(-29) # kB = 1.38*10^-29 [nm^2 kg ps^-2 K^-1]
 a = ((kB * T) / m)**0.5
 
 # Lennard-Jones depth of potential well
-eps = 10.22 * kB # Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22
+eps =  10.22 * kB # Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22 ADDED FACTOR FOR INCREASED INTERACTION
 # eps = [J] = [kg m^2 s^-2] = 10^-6 [kg nm^2 ps^-2]
 
 # Lennard-Jones distance at which potential is minimal
