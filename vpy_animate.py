@@ -4,9 +4,11 @@ import variables as var
 import numpy as np
 class VpyAnimate(object):
 
+
     def __init__(self, particles, loops):
         self.particles = particles
         self.posMatrix = np.empty((var.numParticles, var.dimension, loops))
+        self.speed = 20
         self.init_balls()
     # wallR = box (pos=(0,0,0), size=(var.boxSize,var.boxSize,var.boxSize), color = color.green)
 
@@ -29,7 +31,7 @@ class VpyAnimate(object):
         self.z = self.posMatrix[:, 2, :]
         while 1:
             for i in range(np.shape(self.x)[1]):
-                rate(20)
+                rate(self.speed)
                 for j in range(var.numParticles):
                     self.balls[j].pos = vector(self.x[j,i],self.y[j,i],self.z[j,i])
 
