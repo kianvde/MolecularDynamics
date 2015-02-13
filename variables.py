@@ -2,7 +2,7 @@
 
 ## imports
 import numpy as np
-import Potentials as Pot
+import potentials as Pot
 
 ## constants
 ## Constants are given in nm, ps units (i.e distance 1 = 1 nm, time 1 = 1 ps)
@@ -41,15 +41,15 @@ eps =  10.22 * kB # Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22 ADDED 
 # Lennard-Jones distance at which potential is minimal
 rMin = 0.2869 # Helium Cyrogenics - Steven van Sciver, rMin = 0.2869 nm
 
-## classes
+## Particles
 class Particles(object):
 
 
     ## initialization ##
     def __init__(self):
 
-        self.initposs = self.initPositions()
-        self.initvelocc = self.initVelocities()
+        self.initPositions()
+        self.initVelocities()
         self.force = np.zeros(np.shape(self.positions))
         self.energy = 0
         self.potential = 0
@@ -95,12 +95,12 @@ class Particles(object):
     def update(self, dT):
 
         self.updateParticles(dT)
-        self.updateVelFor(dT)
+        self.updateVelocities(dT)
 
-        vel2 = self.velocities**2
-        vel2sum = np.sum(vel2,axis=None)
-        self.energy = (0.5 * m * vel2sum + self.potential) * 10**6 # Energy in Joule
-        self.temperature = (2.0/3.0) * (0.5 * m * vel2sum) / (numParticles * kB)  # Paper Verlet 1967
+
+        v2 = np.sum(self.velocities**2,axis=None)
+        self.energy = (0.5 * m * v2 + self.potential) * 10**6 # Energy in Joule
+        self.temperature = (2.0/3.0) * (0.5 * m * v2) / (numParticles * kB)  # Paper Verlet 1967
 
     # update the particle positions
     def updateParticles(self, dT):
@@ -115,23 +115,15 @@ class Particles(object):
         self.positions[negTranslation] -= boxSize
 
     # update the particle velocities and forces
-    def updateVelFor(self, dT):
-
-        # TODO calculate forces on particles with the positions (Leo):
-        # function:
-        # in -> positionVectors (self.position)
-        # out -> forceVectors (FORCE)
-        #
-        # both numParticles by dimension matrices
-
+    def updateVelocities(self, dT):
         self.velocities += 0.5 * (self.force / m) * dT
-        self.force, self.potential = Pot.Len_Jones(self.positions)
+        self.force, self.potential = Pot.lennardJones(self.positions)
         self.velocities += 0.5 * (self.force / m) * dT
 
     # Currently unused!!
     def updateForce(self):
 
-        self.force, self.potential = Pot.Len_Jones(self.positions)
+        self.force, self.potential = Pot.lennardJones(self.positions)
 
 
 

@@ -10,19 +10,17 @@ import force_loop as fl
 # input:    positions -> numParticles by dimension matrix holding the potions components of the particles
 # output:   force -> numParticles by dimension matrix holding the force components on the particles
 #           potentialEnergy -> total potential energy for th particles
-def Len_Jones_Fortran(positions, pImagedParticles = np.empty((0,3),order='F')):
+def lennardJones(positions, pImagedParticles = np.empty((0,3),order='F')):
     return fl.lennard_jones(var.rMin, var.eps, positions, pImagedParticles)
 
-
-# Lennard - Jones, sigma and epsilon not yet chosen!
-# WARNING: Code is vectorised, i.e. it trades memory for speed. If memory becomes an issue, remove matrixes after they
-# have been used, as the code creates multiple size 3*N^2 matrices for calculations
+#################unused################
+# Lennard - Jones vectorized in python
 
 # function Len_Jones.
 # input:    positions -> numParticles by dimension matrix holding the potions components of the particles
 # output:   force -> numParticles by dimension matrix holding the force components on the particles
 #           potentialEnergy -> total potential energy for th particles
-def Len_Jones(positions, pImagedParticles = np.empty((0,3))):
+def lennardJonesVectorized(positions, pImagedParticles = np.empty((0,3))):
 
     # get the shape of the positions matrix (nP,3) and the imaged particles matrix (nI,3)
     (nP, d) = np.shape(positions)
