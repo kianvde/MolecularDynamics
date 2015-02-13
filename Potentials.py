@@ -1,6 +1,18 @@
 # Calculating potentials and forces
 import numpy as np
 import variables as var
+import force_loop as fl
+
+
+# Lennard - Jones with for loop in fortran
+
+# function Len_Jones_Fortran.
+# input:    positions -> numParticles by dimension matrix holding the potions components of the particles
+# output:   force -> numParticles by dimension matrix holding the force components on the particles
+#           potentialEnergy -> total potential energy for th particles
+def Len_Jones_Fortran(positions, pImagedParticles = np.empty((0,3),order='F')):
+    return fl.lennard_jones(var.rMin, var.eps, positions, pImagedParticles)
+
 
 # Lennard - Jones, sigma and epsilon not yet chosen!
 # WARNING: Code is vectorised, i.e. it trades memory for speed. If memory becomes an issue, remove matrixes after they
