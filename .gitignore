@@ -2,7 +2,7 @@
 
 *.iml
 *.pyc
-*.p90~
+*.f90~
 
 ## Directory-based project format:
 .idea/
