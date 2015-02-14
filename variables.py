@@ -14,16 +14,16 @@ numParticlesAxis = 3
 numParticles = numParticlesAxis**3
 
 # time step
-deltaT = .1 # 1 microsecond, time step in ps, rescale the rest to fit
+deltaT = 0.1 # 1 microsecond, time step in ps, rescale the rest to fit
 
 # length of the box side of the box
-boxSize = 100.0 # Box size in nm, rescale everything else to fit
+boxSize = 10.0 # Box size in nm, rescale everything else to fit
 
 # part of the box used for particle imaging improving field
 imageSize = 0.2*boxSize
 
 # Temperature (in Kelvin)
-T = 1.
+T = 1.0
 
 # Mass
 m = 6.64648*10**(-27) # 6.64648*10**(-27) kg
@@ -94,8 +94,20 @@ class Particles(object):
     ## update functions ##
     def update(self, dT):
 
-        self.updateParticles(dT)
-        self.updateVelFor(dT)
+        # 4th-order symplectic RK4 integrator (Forest & Ruth, 1989)
+
+        X = (1.0/6.0) * (2.0**(1.0/3.0) + 2.0**(-1.0/3.0) - 1)
+        self.updateParticles(dT, X + 0.5)
+        self.updateForce()
+        self.updateVelocities(dT, 2.0*X + 1.0)
+        self.updateParticles(dT, -X)
+        self.updateForce()
+        self.updateVelocities(dT, -4.0*X - 1.0)
+        self.updateParticles(dT, -X)
+        self.updateForce()
+        self.updateVelocities(dT, 2.0*X + 1.0)
+        self.updateParticles(dT, X + 0.5)
+        self.updateForce()
 
         vel2 = self.velocities**2
         vel2sum = np.sum(vel2,axis=None)
@@ -103,9 +115,9 @@ class Particles(object):
         self.temperature = (2.0/3.0) * (0.5 * m * vel2sum) / (numParticles * kB)  # Paper Verlet 1967
 
     # update the particle positions
-    def updateParticles(self, dT):
+    def updateParticles(self, dT, D):
 
-        self.positions += self.velocities * dT + 0.5 * (self.force / m) * (dT**2)
+        self.positions += D * self.velocities * dT # + 0.5 * (self.force / m) * (dT**2)
 
         # translate the particles outside of the box
         # +boxSize if positionComponent < 0, -boxSize if positionComponent > 5
@@ -115,7 +127,7 @@ class Particles(object):
         self.positions[negTranslation] -= boxSize
 
     # update the particle velocities and forces
-    def updateVelFor(self, dT):
+    def updateVelocities(self, dT, C):
 
         # TODO calculate forces on particles with the positions (Leo):
         # function:
@@ -124,9 +136,7 @@ class Particles(object):
         #
         # both numParticles by dimension matrices
 
-        self.velocities += 0.5 * (self.force / m) * dT
-        self.force, self.potential = Pot.Len_Jones(self.positions)
-        self.velocities += 0.5 * (self.force / m) * dT
+        self.velocities += C * (self.force / m) * dT
 
     # Currently unused!!
     def updateForce(self):
