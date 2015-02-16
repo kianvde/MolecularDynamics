@@ -2,7 +2,7 @@
 
 ## imports
 import numpy as np
-import Potentials as Pot
+import potentials as Pot
 
 ## constants
 ## Constants are given in nm, ps units (i.e distance 1 = 1 nm, time 1 = 1 ps)
@@ -41,15 +41,15 @@ eps =  10.22 * kB # Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22 ADDED 
 # Lennard-Jones distance at which potential is minimal
 rMin = 0.2869 # Helium Cyrogenics - Steven van Sciver, rMin = 0.2869 nm
 
-## classes
+## Particles
 class Particles(object):
 
 
     ## initialization ##
     def __init__(self):
 
-        self.initposs = self.initPositions()
-        self.initvelocc = self.initVelocities()
+        self.initPositions()
+        self.initVelocities()
         self.force = np.zeros(np.shape(self.positions))
         self.energy = 0
         self.potential = 0
@@ -94,6 +94,7 @@ class Particles(object):
     ## update functions ##
     def update(self, dT):
 
+
         # 4th-order symplectic RK4 integrator (Forest & Ruth, 1989)
 
         X = (1.0/6.0) * (2.0**(1.0/3.0) + 2.0**(-1.0/3.0) - 1)
@@ -109,10 +110,11 @@ class Particles(object):
         self.updateParticles(dT, X + 0.5)
         self.updateForce()
 
-        vel2 = self.velocities**2
-        vel2sum = np.sum(vel2,axis=None)
-        self.energy = (0.5 * m * vel2sum + self.potential) * 10**6 # Energy in Joule
-        self.temperature = (2.0/3.0) * (0.5 * m * vel2sum) / (numParticles * kB)  # Paper Verlet 1967
+
+
+        v2 = np.sum(self.velocities**2,axis=None)
+        self.energy = (0.5 * m * v2 + self.potential) * 10**6 # Energy in Joule
+        self.temperature = (2.0/3.0) * (0.5 * m * v2) / (numParticles * kB)  # Paper Verlet 1967
 
     # update the particle positions
     def updateParticles(self, dT, D):
@@ -138,10 +140,11 @@ class Particles(object):
 
         self.velocities += C * (self.force / m) * dT
 
+
     # Currently unused!!
     def updateForce(self):
 
-        self.force, self.potential = Pot.Len_Jones(self.positions)
+        self.force, self.potential = Pot.lennardJones(self.positions)
 
 
 
