@@ -2,7 +2,7 @@
 
 ## imports
 import numpy as np
-import potentials as Pot
+from potentials import lennardJones
 
 ## constants
 ## Constants are given in nm, ps units (i.e distance 1 = 1 nm, time 1 = 1 ps)
@@ -19,8 +19,8 @@ deltaT = 0.1 # 1 microsecond, time step in ps, rescale the rest to fit
 # length of the box side of the box
 boxSize = 10.0 # Box size in nm, rescale everything else to fit
 
-# part of the box used for particle imaging improving field
-imageSize = 0.2*boxSize
+# interaction range for the particles
+rCutoff = 0.2*boxSize
 
 # Temperature (in Kelvin)
 T = 1.0
@@ -57,8 +57,8 @@ class Particles(object):
 
     # initialize the particle positions
     def initPositions(self):
-        #Using cubic lattice
-        #volumeBox   = boxSize**dimension
+        # Using cubic lattice
+        # volumeBox   = boxSize**dimension
 
         self.positions = np.zeros((numParticles,dimension))
         numAxis = float(numParticlesAxis)
@@ -66,19 +66,19 @@ class Particles(object):
         posAxis     = np.arange(0,numAxis)/numAxis * boxSize
         k=0
         for j in range(0,numParticles,increment):
-            self.positions[j:j+increment, 0] = posAxis      #For every n particles that are on an axis, set coordinates of those n. Coords are in posAxis.
-                                                            #Let's say these are the x coords, then we have x0,x1..xn,x0,x1...xn etc.
-            if (j%increment**2)==0:                         #Here add the 'z' coordinates after n**2
+            self.positions[j:j+increment, 0] = posAxis      # For every n particles that are on an axis, set coordinates of those n. Coords are in posAxis.
+                                                            # Let's say these are the x coords, then we have x0,x1..xn,x0,x1...xn etc.
+            if (j%increment**2)==0:                         # Here add the 'z' coordinates after n**2
                 self.positions[j:j+increment**2, 2] = np.array([posAxis[k]]*increment**2)
                 k+=1
                 i = 0
             if (j%increment)==0:                  #Add the 'y' coordinates, after n repetitions of x0->xn
                 self.positions[j:j+increment, 1] = np.array([posAxis[i]]*increment)
                 i += 1
-        #Using fcc lattice, we know density of one fcc cube is 14/a**3 units/m3
-        #volumeBox   = boxSize**dimension
-        #partDenisty = numParticles/volumeBox
-        #sideFcc     = (14./partDenisty)**(1./3)
+        # Using fcc lattice, we know density of one fcc cube is 14/a**3 units/m3
+        # volumeBox   = boxSize**dimension
+        # partDenisty = numParticles/volumeBox
+        # sideFcc     = (14./partDenisty)**(1./3)
         return self.positions
 
     # initialize the particle velocities
@@ -89,14 +89,11 @@ class Particles(object):
         # (i.e. Gaussian distribution with mean=0 and std(=a)=sqrt(3kT/m) for the
         # velocity components
         self.velocities = np.random.normal(0., a, (numParticles,dimension))
-        return self.velocities
 
     ## update functions ##
     def update(self, dT):
 
-
         # 4th-order symplectic RK4 integrator (Forest & Ruth, 1989)
-
         X = (1.0/6.0) * (2.0**(1.0/3.0) + 2.0**(-1.0/3.0) - 1)
         self.updateParticles(dT, X + 0.5)
         self.updateForce()
@@ -109,8 +106,6 @@ class Particles(object):
         self.updateVelocities(dT, 2.0*X + 1.0)
         self.updateParticles(dT, X + 0.5)
         self.updateForce()
-
-
 
         v2 = np.sum(self.velocities**2,axis=None)
         self.energy = (0.5 * m * v2 + self.potential) * 10**6 # Energy in Joule
@@ -131,24 +126,16 @@ class Particles(object):
     # update the particle velocities and forces
     def updateVelocities(self, dT, C):
 
-        # TODO calculate forces on particles with the positions (Leo):
-        # function:
-        # in -> positionVectors (self.position)
-        # out -> forceVectors (FORCE)
-        #
-        # both numParticles by dimension matrices
-
         self.velocities += C * (self.force / m) * dT
 
-
-    # Currently unused!!
+    # update the forces on the particles and calculate the potential energy
     def updateForce(self):
 
-        self.force, self.potential = Pot.lennardJones(self.positions)
+        self.force, self.potential = lennardJones(self.positions)
 
 
 
-    ## helper functions ##
+    ## UNUSED ##
 
     # get the particles within a distance imageSize from the box boundaries and translate them to outside
     # the box for force computation to simulate an infinite volume
@@ -158,8 +145,8 @@ class Particles(object):
 
         p = self.positions                          # original particle position matrix
         t = np.zeros((np.shape(p)))                 # matrix containing translation values per coordinate
-        t[p < imageSize] = boxSize
-        t[p > boxSize - imageSize] = -boxSize
+        t[p < rCutoff] = boxSize
+        t[p > boxSize - rCutoff] = -boxSize
         tBool = t != 0
         numWalls = np.sum(tBool, axis=1)             # number of walls the particle is close to
 
