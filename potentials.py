@@ -1,7 +1,7 @@
 # Calculating potentials and forces
 import numpy as np
 import variables as var
-import lennard_jonesmodule as lj
+import lennard_jones as lj
 
 
 # Lennard - Jones with for loop in fortran
