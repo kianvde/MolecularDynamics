@@ -31,10 +31,7 @@ subroutine lennard_jones(r_min, eps, L, r_c, p, N, d, force, Ep)
     real(8), dimension(d) :: r
     real(8) :: r_abs, force_fact
     integer :: i, j
-    
-    force = 0
-	force_fact = 0
-    Ep = 0
+
     do i=1,N
         do j=1,N
             r = p(i,:) - p(j,:) - L*ANINT((p(i,:) - p(j,:))/L)
@@ -48,7 +45,6 @@ subroutine lennard_jones(r_min, eps, L, r_c, p, N, d, force, Ep)
                 ! force matrix
 				force_fact = 6.0*eps*((r_min**12/r_abs**14) - (r_min**6/r_abs**8))
                 force(i,:) = force(i,:) + force_fact*r
-
             end if
         end do
     end do
