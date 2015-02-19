@@ -205,10 +205,12 @@ class plotHelper(object):
         self.partTemp = []
         pass
 
-    def plotTemp(self,loopnum):
-        self.partTemp = self.partTemp + [Particles.temperature]
-        self.axis.plot(np.arange(loopnum), Particles.temperature)
-        plt.pause(0.00001)
+    def plotTemp(self,loopnum, temp):
+        self.partTemp = self.partTemp + [temp]
+        
+        print self.partTemp
+        self.axis.plot(np.arange(loopnum+1), self.partTemp)
+
 
     def plotEnergy(self, loopnum):
         self.axis2.plot(loopnum, Particles.energy)

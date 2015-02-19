@@ -15,7 +15,7 @@ class MolDynSimulation(object) :
 
         # Create animation object
         #self.animation = an.Animate(var.boxSize, self.numIterations, var.dimension, var.numParticles)
-        self.animation = an.VpyAnimate(self.particles, self.numIterations)
+        #self.animation = an.VpyAnimate(self.particles, self.numIterations)
         self.plotGraph = var.plotHelper()
 
 
@@ -35,7 +35,7 @@ class MolDynSimulation(object) :
         i = 0
         while self.Ediff > 10**(-10):
             # update particles
-            self.plotGraph.plotTemp(i)
+            self.plotGraph.plotTemp(i,self.particles.temperature)
             self.particles.update(var.deltaT)
             # Set all particles to new position for every update
             # self.animation.plot_anim(self.particles.positions)
