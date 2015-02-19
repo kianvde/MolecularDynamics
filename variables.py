@@ -54,7 +54,8 @@ class Particles(object):
         self.energy = 0
         self.potential = 0
         self.temperature = T
-
+        self.initposs = self.initPositions()
+        self.initvelocc = self.initVelocities()
     # initialize the particle positions
     def initPositions(self):
         # Using cubic lattice
