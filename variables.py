@@ -17,7 +17,7 @@ numParticles = numParticlesAxis**3
 deltaT = 0.001 # 1 microsecond, time step in ps, rescale the rest to fit
 
 # Density [particles/unit**3]
-density = 10.
+density = 0.01
 
 # length of the box side of the box
 boxSize = (numParticles/density)**(1./3) # Box size in nm, rescale everything else to fit
