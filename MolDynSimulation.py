@@ -1,6 +1,6 @@
 import variables as var
 import numpy as np
-# import vpy_animate as an
+import vpy_animate as an
 
 class MolDynSimulation(object) :
 
@@ -9,11 +9,11 @@ class MolDynSimulation(object) :
         self.particles = var.Particles()
 
         # Number of simulation loops
-        self.numIterations = 1000
+        self.numIterations = 10000
 
         # Create animation object
-#       self.animation = an.Animate(var.boxSize, loops, var.dimension, var.numParticles)
-#       self.animation = an.VpyAnimate(self.particles, loops)
+        #self.animation = an.Animate(var.boxSize, self.numIterations, var.dimension, var.numParticles)
+        self.animation = an.VpyAnimate(self.particles, self.numIterations)
 
 
 
@@ -22,12 +22,15 @@ class MolDynSimulation(object) :
 
         for i in range(self.numIterations):
             # Build coordinate matrix for every iteration of the loop
-#           self.animation.buildCoords(i, self.particles.positions)
+            #self.animation.buildCoords(i, self.particles.positions)
             # update particles
             self.particles.update(var.deltaT)
+            # Set all particles to new position for every update
+            self.animation.plot_anim(self.particles.positions)
+            print i
 
         # Resize axis and do animation
-#       self.animation.plot_anim()
+
 
 # init and loop
 molDynSimulation = MolDynSimulation()
