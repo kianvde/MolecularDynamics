@@ -14,7 +14,7 @@ numParticlesAxis = 3
 numParticles = numParticlesAxis**3
 
 # time step
-deltaT = 0.1 # 1 microsecond, time step in ps, rescale the rest to fit
+deltaT = 0.01 # 1 microsecond, time step in ps, rescale the rest to fit
 
 # length of the box side of the box
 boxSize = 10.0 # Box size in nm, rescale everything else to fit
@@ -76,6 +76,7 @@ class Particles(object):
             if (j%increment)==0:                  #Add the 'y' coordinates, after n repetitions of x0->xn
                 self.positions[j:j+increment, 1] = np.array([posAxis[i]]*increment)
                 i += 1
+        # A start with using FCC
         # Using fcc lattice, we know density of one fcc cube is 14/a**3 units/m3
         # volumeBox   = boxSize**dimension
         # partDenisty = numParticles/volumeBox
