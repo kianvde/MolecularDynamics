@@ -44,6 +44,10 @@ rMin = 0.2869 # Helium Cyrogenics - Steven van Sciver, rMin = 0.2869 nm
 # interaction range for the particles
 rCutoff = 3*rMin
 
+# Thermostat rise time
+tau = deltaT / 0.025
+
+
 ## Particles
 class Particles(object):
 
@@ -94,6 +98,7 @@ class Particles(object):
         # (i.e. Gaussian distribution with mean=0 and std(=a)=sqrt(3kT/m) for the
         # velocity components
         self.velocities = np.random.normal(0., a, (numParticles,dimension))
+        print np.sum(self.velocities**2,axis=None) * (2.0/3.0) * (0.5 * m) / (numParticles * kB)
 
     ## update functions ##
     def update(self, dT):
@@ -112,6 +117,12 @@ class Particles(object):
         self.updateParticles(dT, X + 0.5)
         self.updateForce()
 
+        v2 = np.sum(self.velocities**2,axis=None)
+        vavg = (3.0 * kB * T / m)**0.5
+        self.temperature = (2.0/3.0) * (0.5 * m * v2) / (numParticles * kB)  # Paper Verlet 1967
+        # Rescaling according to Berendsen thermostat
+        lambdy = (1.0 + (deltaT / tau) * (T / self.temperature - 1.0))**0.5
+        self.velocities = self.velocities * lambdy
         v2 = np.sum(self.velocities**2,axis=None)
         self.energy = (0.5 * m * v2 + self.potential) * 10**6 # Energy in Joule
         self.temperature = (2.0/3.0) * (0.5 * m * v2) / (numParticles * kB)  # Paper Verlet 1967

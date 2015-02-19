@@ -14,6 +14,7 @@
 ! output:
 !   force   -> force components matrix
 !   Ep      -> potential energy
+!   vir     -> factor for the verial theorem pressure calculation
 
 
 
@@ -32,14 +33,18 @@ subroutine lennard_jones(r_min, eps, L, r_c, p, N, d, force, Ep)
     
     force = 0
     Ep = 0
+    vir = 0
     do i=1,N
         do j=1,N
             r = p(i,:) - p(j,:) - L*ANINT((p(i,:) - p(j,:))/L)
             r2 = sum(r**2)
-            if ((r2 .NE. 0) .and. (r2 < r_c**2))  then
-               Ep = Ep + &
-                    0.5*eps*((r_min**12/r2**6) - (r_min**6/r2**3))
 
+            if ((r2 .NE. 0) .and. (r2 < r_c**2))  then
+                ! potential energy
+                Ep = Ep + &
+                    0.5*eps*((r_min**12/r2**6) - 2*(r_min**6/r2**3))
+                
+                ! force matrix
                 force(i,:) = force(i,:) + &
                     6.0*eps*((r_min**12/r2**7) - (r_min**6/r2**4))*r
             end if
