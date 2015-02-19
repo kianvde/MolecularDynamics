@@ -3,7 +3,9 @@
 ## imports
 import numpy as np
 from potentials import lennardJones
-
+import matplotlib
+matplotlib.use("qt4agg")
+from matplotlib import pyplot as plt
 ## constants
 ## Constants are given in nm, ps units (i.e distance 1 = 1 nm, time 1 = 1 ps)
 # dimensionality of the system
@@ -192,3 +194,22 @@ class Particles(object):
             translatedImages = np.concatenate((translatedImages, p3 + t2Col), axis=0)
 
         return translatedImages
+
+class plotHelper(object):
+
+    def __init__(self):
+        self.fig = plt.figure()
+        self.fig2 = plt.figure()
+        self.axis = self.fig.add_subplot(111)
+        self.axis2 = self.fig2.add_subplot(111)
+        self.partTemp = []
+        pass
+
+    def plotTemp(self,loopnum):
+        self.partTemp = self.partTemp + [Particles.temperature]
+        self.axis.plot(np.arange(loopnum), Particles.temperature)
+        plt.pause(0.00001)
+
+    def plotEnergy(self, loopnum):
+        self.axis2.plot(loopnum, Particles.energy)
+        plt.pause(0.00001)
