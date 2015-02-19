@@ -3,7 +3,9 @@
 ## imports
 import numpy as np
 from potentials import lennardJones
-
+import matplotlib
+matplotlib.use("qt4agg")
+from matplotlib import pyplot as plt
 ## constants
 ## Constants are given in nm, ps units (i.e distance 1 = 1 nm, time 1 = 1 ps)
 # dimensionality of the system
@@ -17,7 +19,7 @@ numParticles = numParticlesAxis**3
 deltaT = 0.001 # 1 microsecond, time step in ps, rescale the rest to fit
 
 # Density [particles/unit**3]
-density = 0.01
+density = 0.001
 
 # length of the box side of the box
 boxSize = (numParticles/density)**(1./3) # Box size in nm, rescale everything else to fit
@@ -35,14 +37,14 @@ kB = 1.3806488*10**(-29) # kB = 1.38*10^-29 [nm^2 kg ps^-2 K^-1]
 a = ((kB * T) / m)**0.5
 
 # Lennard-Jones depth of potential well
-eps =  1.65 * 10**(-15) # http://stp.clarku.edu/simulations/lj/ ##Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22
+eps =  1.65 * 10**(-27) # http://stp.clarku.edu/simulations/lj/ ##Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22
 # eps = [J] = [kg m^2 s^-2] = 10^-6 [kg nm^2 ps^-2]
 
 # Lennard-Jones distance at which potential is minimal
 rMin = 0.34 * 2.0**(1.0/6.0)  # http://stp.clarku.edu/simulations/lj/ ##Helium Cyrogenics - Steven van Sciver, rMin = 0.2869 nm
 
 # interaction range for the particles
-rCutoff = 3*rMin
+rCutoff = 0.4*boxSize #3.0*rMin
 
 # Thermostat rise time
 tau = deltaT / 0.25
@@ -204,3 +206,23 @@ class Particles(object):
             translatedImages = np.concatenate((translatedImages, p3 + t2Col), axis=0)
 
         return translatedImages
+
+class plotHelper(object):
+
+    def __init__(self):
+        self.fig = plt.figure()
+        self.fig2 = plt.figure()
+        self.axis = self.fig.add_subplot(111)
+        self.axis2 = self.fig2.add_subplot(111)
+        self.partTemp = []
+        pass
+
+    def plotTemp(self,loopnum, temp):
+        self.partTemp = self.partTemp + [temp]
+        print self.partTemp
+        self.axis.plot(np.arange(loopnum+1), self.partTemp)
+        plt.show()
+
+    def plotEnergy(self, loopnum):
+        self.axis2.plot(loopnum, Particles.energy)
+        plt.pause(0.00001)
