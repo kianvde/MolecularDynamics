@@ -9,7 +9,7 @@ class MolDynSimulation(object) :
         self.particles = var.Particles()
 
         # Number of simulation loops
-        self.numIterations = 10000
+        self.numIterations = 1000
 
         # Create animation object
         #self.animation = an.Animate(var.boxSize, self.numIterations, var.dimension, var.numParticles)
@@ -27,7 +27,7 @@ class MolDynSimulation(object) :
             self.particles.update(var.deltaT)
             # Set all particles to new position for every update
             self.animation.plot_anim(self.particles.positions)
-            print i
+            #print i
 
         # Resize axis and do animation
 

@@ -24,7 +24,7 @@ class VpyAnimate(object):
         bSize = var.boxSize+self.sphereRadius
         wallR = box (pos=(var.boxSize/2.,var.boxSize/2.,var.boxSize/2.), size=(bSize,bSize,bSize), color = color.blue, opacity = 0.3)
     def plot_anim(self, positions):
-        rate(1000)
+        rate(100)
         self.x = positions[:,0]
         self.y = positions[:,1]
         self.z = positions[:,2]
