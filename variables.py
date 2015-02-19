@@ -10,17 +10,17 @@ from potentials import lennardJones
 dimension = 3
 
 # number of particles in the system
-numParticlesAxis = 5
+numParticlesAxis = 3 # Number of particles per axis, rescale everything else to accommodate the density
 numParticles = numParticlesAxis**3
 
 # time step
-deltaT = 0.01 # 1 microsecond, time step in ps, rescale the rest to fit
+deltaT = 0.001 # 1 microsecond, time step in ps, rescale the rest to fit
+
+# Density [particles/unit**3]
+density = 0.01
 
 # length of the box side of the box
-boxSize = 10.0 # Box size in nm, rescale everything else to fit
-
-# interaction range for the particles
-rCutoff = 0.2*boxSize
+boxSize = (numParticles/density)**(1./3) # Box size in nm, rescale everything else to fit
 
 # Temperature (in Kelvin)
 T = 1.0
@@ -35,14 +35,18 @@ kB = 1.3806488*10**(-29) # kB = 1.38*10^-29 [nm^2 kg ps^-2 K^-1]
 a = ((kB * T) / m)**0.5
 
 # Lennard-Jones depth of potential well
-eps =  10.22 * kB # Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22 ADDED FACTOR FOR INCREASED INTERACTION
+eps =  1.65 * 10**(-15) # http://stp.clarku.edu/simulations/lj/ ##Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22
 # eps = [J] = [kg m^2 s^-2] = 10^-6 [kg nm^2 ps^-2]
 
 # Lennard-Jones distance at which potential is minimal
-rMin = 0.2869 # Helium Cyrogenics - Steven van Sciver, rMin = 0.2869 nm
+rMin = 0.34 * 2.0**(1.0/6.0)  # http://stp.clarku.edu/simulations/lj/ ##Helium Cyrogenics - Steven van Sciver, rMin = 0.2869 nm
+
+# interaction range for the particles
+rCutoff = 3*rMin
 
 # Thermostat rise time
-tau = deltaT / 0.025
+tau = deltaT / 0.25
+
 
 ## Particles
 class Particles(object):
@@ -126,7 +130,7 @@ class Particles(object):
     # update the particle positions
     def updateParticles(self, dT, D):
 
-        self.positions += D * self.velocities * dT # + 0.5 * (self.force / m) * (dT**2)
+        self.positions += D * self.velocities * dT #+ 0.5 * (self.force / m) * (dT**2)
 
         # translate the particles outside of the box
         # +boxSize if positionComponent < 0, -boxSize if positionComponent > 5

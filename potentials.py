@@ -41,7 +41,7 @@ def lennardJonesVectorized(positions, pImagedParticles = np.empty((0,3))):
     # Calculate potential and forces using Leonard-Jones V = 4*eps*((sigma/r)^12-(sigma/r)^6)
     # potentials (forceFactor) is a n by n matrix with on position i,j the potential energy
     # on particle i due to particle j
-    potentials = var.eps * ((var.rMin**12 / r2**6) - (var.rMin**6 / r2**3))
+    potentials = var.eps * ((var.rMin**12 / r2**6) - 2.0*(var.rMin**6 / r2**3))
     potentialEnergy = 0.5 * np.sum(potentials, axis=None)
     forceFactor = 6.0 * var.eps * ((var.rMin**12 / r2**7) - (var.rMin**6 / r2**4))
 
