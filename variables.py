@@ -60,9 +60,12 @@ class Particles(object):
         self.force = np.zeros(np.shape(self.positions))
         self.energy = 0
         self.potential = 0
+        self.pressure = 0
+        self.virialFactor = np.array()
         self.temperature = T
         self.initposs = self.initPositions()
         self.initvelocc = self.initVelocities()
+
     # initialize the particle positions
     def initPositions(self):
         # Using cubic lattice
@@ -147,9 +150,18 @@ class Particles(object):
     # update the forces on the particles and calculate the potential energy
     def updateForce(self):
 
-        self.force, self.potential = lennardJones(self.positions)
+        self.force, self.potential, vF = lennardJones(self.positions)
+        self.virialFactor = np.append(self.virialFactor, vF)
 
+    # calculate the pressure using the virial theorem
+    def calculatePressure(self):
 
+        if (len(self.virialFactor) < 10):
+            vF = np.mean(self.virialFactor)
+        else:
+            vF = np.mean(self.virialFactor[-9:])
+
+        self.pressure = density*self.temperature*(kB - vF/(6.0*numParticles*self.temperature))
 
     ## UNUSED ##
 

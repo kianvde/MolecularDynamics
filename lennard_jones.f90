@@ -19,14 +19,14 @@
 
 
 
-subroutine lennard_jones(r_min, eps, L, r_c, p, N, d, force, Ep)
+subroutine lennard_jones(r_min, eps, L, r_c, p, N, d, force, Ep, vir)
     implicit none
     
     integer, intent(inout) :: N, d; real(8), intent(in) :: r_min, eps, r_c, L
     real(8), intent(in), dimension(N, d) :: p
 
     real(8), intent(out), dimension(N, d) :: force
-    real(8), intent(out) :: Ep
+    real(8), intent(out) :: Ep, vir
 
     real(8), dimension(d) :: r
     real(8) :: r_abs, force_fact
@@ -45,6 +45,9 @@ subroutine lennard_jones(r_min, eps, L, r_c, p, N, d, force, Ep)
                 ! force matrix
 				force_fact = 6.0*eps*((r_min**12/r_abs**14) - (r_min**6/r_abs**8))
                 force(i,:) = force(i,:) + force_fact*r
+					
+				! virial factor
+				vir = vir - 0.5*force_fact*r_abs
             end if
         end do
     end do
