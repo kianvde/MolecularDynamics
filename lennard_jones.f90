@@ -43,11 +43,11 @@ subroutine lennard_jones(r_min, eps, L, r_c, p, N, d, force, Ep, vir)
                     0.5*eps*((r_min**12/r_abs**12) - 2.0*(r_min**6/r_abs**6))
                 
                 ! force matrix
-				force_fact = 6.0*eps*((r_min**12/r_abs**14) - (r_min**6/r_abs**8))
+				force_fact = 12.0*eps*((r_min**12/r_abs**14) - (r_min**6/r_abs**8))
                 force(i,:) = force(i,:) + force_fact*r
 					
 				! virial factor
-				vir = vir - 0.5*force_fact*r_abs
+				vir = vir - 0.5*force_fact*r_abs**2
             end if
         end do
     end do

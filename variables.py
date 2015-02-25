@@ -10,21 +10,22 @@ from matplotlib import pyplot as plt
 ## Constants and variables are given in nm, ps units (i.e distance 1 = 1 nm, time 1 = 1 ps)
 
 ## variables ##
-numParticlesAxis = 3    # Number of particles per axis, rescale everything else to accommodate the density
-deltaT = 0.001          # time step in ps, rescale the rest to fit
-density = 0.001         # Density
-T = 1.0                 # Temperature (in Kelvin)
+numParticlesAxis = 10   # Number of particles per axis, rescale everything else to accommodate the density
+deltaT = 0.032          # time step
+density = 0.65          # Density
+T = 1.036               # Temperature (in Kelvin)
 
 ## constants ##
 dimension = 3                               # dimensionality of the system
 numParticles = numParticlesAxis**3          # number of particles
 boxSize = (numParticles/density)**(1./3)    # length of the box side of the box
-m = 6.64648*10**(-27)                       # Mass
-kB = 1.3806488*10**(-29)                    # Boltzmann constant
+m = 48                                      # Mass
+kB = 1.0                                    # Boltzmann constant
 a = ((kB * T) / m)**0.5                     # Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
-eps =  1.65 * 10**(-27)                     # Lennard-Jones depth of potential well
-rMin = 0.34 * 2.0**(1.0/6.0)                # Lennard-Jones distance at which potential is minimal
-rCutoff = 0.4*boxSize                       # interaction range for the particles
+eps =  1.0                                  # Lennard-Jones depth of potential well
+sigma = 1.0                                 # Lennard-Jones sigma
+rMin = sigma * 2.0**(1.0/6.0)               # Lennard-Jones distance at which potential is minimal
+rCutoff = 3.3*sigma                         # interaction range for the particles
 tau = deltaT / 0.25                         # Thermostat rise time
 
 
@@ -84,6 +85,12 @@ class Particles(object):
     ## update functions ##
     def update(self, dT):
 
+        # # velocity-verlet (2nd order)
+        # self.updateParticles(dT, 1)
+        # self.updateVelocities(dT, 0.5)
+        # self.updateForce()
+        # self.updateVelocities(dT, 0.5)
+
         # 4th-order symplectic RK4 integrator (Forest & Ruth, 1989)
         X = (1.0/6.0) * (2.0**(1.0/3.0) + 2.0**(-1.0/3.0) - 1)
         self.updateParticles(dT, X + 0.5)
@@ -101,17 +108,21 @@ class Particles(object):
         v2 = np.sum(self.velocities**2,axis=None)
         vavg = (3.0 * kB * T / m)**0.5
         self.temperature = (2.0/3.0) * (0.5 * m * v2) / (numParticles * kB)  # Paper Verlet 1967
+
         # Rescaling according to Berendsen thermostat
         lambdy = (1.0 + (deltaT / tau) * (T / self.temperature - 1.0))**0.5
         self.velocities = self.velocities * lambdy
+
         v2 = np.sum(self.velocities**2,axis=None)
-        self.energy = (0.5 * m * v2 + self.potential) * 10**6 # Energy in Joule
+        self.energy = (0.5 * m * v2 + self.potential) # Energy in Joule
         self.temperature = (2.0/3.0) * (0.5 * m * v2) / (numParticles * kB)  # Paper Verlet 1967
+
+        self.calculatePressure()
 
     # update the particle positions
     def updateParticles(self, dT, D):
 
-        self.positions += D * self.velocities * dT #+ 0.5 * (self.force / m) * (dT**2)
+        self.positions += D * self.velocities * dT #(verlet) + 0.5 * (self.force / m) * (dT**2)
 
         # translate the particles outside of the box
         # +boxSize if positionComponent < 0, -boxSize if positionComponent > 5
@@ -139,7 +150,7 @@ class Particles(object):
         else:
             vF = np.mean(self.virialFactor[-9:])
 
-        self.pressure = density*self.temperature*(kB - vF/(6.0*numParticles*self.temperature))
+        self.pressure = density*T*(kB - vF/(6.0*numParticles*T))
 
     ## UNUSED ##
 
