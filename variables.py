@@ -6,53 +6,30 @@ from potentials import lennardJones
 import matplotlib
 matplotlib.use("qt4agg")
 from matplotlib import pyplot as plt
-## constants
-## Constants are given in nm, ps units (i.e distance 1 = 1 nm, time 1 = 1 ps)
-# dimensionality of the system
-dimension = 3
 
-# number of particles in the system
-numParticlesAxis = 3 # Number of particles per axis, rescale everything else to accommodate the density
-numParticles = numParticlesAxis**3
+## Constants and variables are given in nm, ps units (i.e distance 1 = 1 nm, time 1 = 1 ps)
 
-# time step
-deltaT = 0.001 # 1 microsecond, time step in ps, rescale the rest to fit
+## variables ##
+numParticlesAxis = 3    # Number of particles per axis, rescale everything else to accommodate the density
+deltaT = 0.001          # time step in ps, rescale the rest to fit
+density = 0.001         # Density
+T = 1.0                 # Temperature (in Kelvin)
 
-# Density [particles/unit**3]
-density = 0.001
-
-# length of the box side of the box
-boxSize = (numParticles/density)**(1./3) # Box size in nm, rescale everything else to fit
-
-# Temperature (in Kelvin)
-T = 1.0
-
-# Mass
-m = 6.64648*10**(-27) # 6.64648*10**(-27) kg
-
-# Boltzmann constant
-kB = 1.3806488*10**(-29) # kB = 1.38*10^-29 [nm^2 kg ps^-2 K^-1]
-
-# Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
-a = ((kB * T) / m)**0.5
-
-# Lennard-Jones depth of potential well
-eps =  1.65 * 10**(-27) # http://stp.clarku.edu/simulations/lj/ ##Helium Cyrogenics - Steven van Sciver, eps/kB = 10.22
-# eps = [J] = [kg m^2 s^-2] = 10^-6 [kg nm^2 ps^-2]
-
-# Lennard-Jones distance at which potential is minimal
-rMin = 0.34 * 2.0**(1.0/6.0)  # http://stp.clarku.edu/simulations/lj/ ##Helium Cyrogenics - Steven van Sciver, rMin = 0.2869 nm
-
-# interaction range for the particles
-rCutoff = 0.4*boxSize #3.0*rMin
-
-# Thermostat rise time
-tau = deltaT / 0.25
+## constants ##
+dimension = 3                               # dimensionality of the system
+numParticles = numParticlesAxis**3          # number of particles
+boxSize = (numParticles/density)**(1./3)    # length of the box side of the box
+m = 6.64648*10**(-27)                       # Mass
+kB = 1.3806488*10**(-29)                    # Boltzmann constant
+a = ((kB * T) / m)**0.5                     # Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
+eps =  1.65 * 10**(-27)                     # Lennard-Jones depth of potential well
+rMin = 0.34 * 2.0**(1.0/6.0)                # Lennard-Jones distance at which potential is minimal
+rCutoff = 0.4*boxSize                       # interaction range for the particles
+tau = deltaT / 0.25                         # Thermostat rise time
 
 
 ## Particles
 class Particles(object):
-
 
     ## initialization ##
     def __init__(self):
@@ -63,7 +40,7 @@ class Particles(object):
         self.energy = 0
         self.potential = 0
         self.pressure = 0
-        self.virialFactor = np.array()
+        self.virialFactor = np.array((0,0))
         self.temperature = T
         self.initposs = self.initPositions()
         self.initvelocc = self.initVelocities()
@@ -103,7 +80,6 @@ class Particles(object):
         # (i.e. Gaussian distribution with mean=0 and std(=a)=sqrt(3kT/m) for the
         # velocity components
         self.velocities = np.random.normal(0., a, (numParticles,dimension))
-        print np.sum(self.velocities**2,axis=None) * (2.0/3.0) * (0.5 * m) / (numParticles * kB)
 
     ## update functions ##
     def update(self, dT):
