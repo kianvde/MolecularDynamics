@@ -46,6 +46,9 @@ class MolDynSimulation(object) :
 
             print i
 
+        plt.plot(self.particles.getCorrelationFunction(self.numIterations))
+        plt.title("correlation function")
+        plt.show()
         plt.plot(compressibility)
         plt.title("compressibility")
         plt.show()

@@ -27,6 +27,7 @@ sigma = 1.0                                 # Lennard-Jones sigma
 rMin = sigma * 2.0**(1.0/6.0)               # Lennard-Jones distance at which potential is minimal
 rCutoff = 3.3*sigma                         # interaction range for the particles
 tau = deltaT / 0.25                         # Thermostat rise time
+numBins = 100                               # number of bins for correlation function calculation
 
 
 ## Particles
@@ -41,6 +42,7 @@ class Particles(object):
         self.energy = 0
         self.potential = 0
         self.pressure = 0
+        self.correlationBin = np.zeros(numBins)
         self.virialFactor = np.array((0,0))
         self.temperature = T
         self.initposs = self.initPositions()
@@ -139,8 +141,9 @@ class Particles(object):
     # update the forces on the particles and calculate the potential energy
     def updateForce(self):
 
-        self.force, self.potential, vF = lennardJones(self.positions)
+        self.force, self.potential, vF, cBin = lennardJones(self.positions)
         self.virialFactor = np.append(self.virialFactor, vF)
+        self.correlationBin += cBin
 
     # calculate the pressure using the virial theorem
     def calculatePressure(self):
@@ -151,6 +154,15 @@ class Particles(object):
             vF = np.mean(self.virialFactor[-9:])
 
         self.pressure = density*T*(kB - vF/(6.0*numParticles*T))
+
+    # return the correlation function using the binned distances collected from fortran
+    def getCorrelationFunction(self, numIterations):
+        i = float(2*numBins)
+        r2 = np.linspace(rCutoff/i,rCutoff*((i-1.0)/i),num=numBins)**2
+
+        prefactor = 2.0/(density*(numParticles-1.0)) * 1.0/(4*np.pi*(rCutoff/numBins))
+
+        return (prefactor/(4*numIterations)) * (self.correlationBin/r2)
 
     ## UNUSED ##
 
