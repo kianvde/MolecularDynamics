@@ -18,8 +18,6 @@
 !   vir     -> factor for the virial theorem pressure calculation
 !   c_bin   -> bin for the correlation
 
-
-
 subroutine lennard_jones(r_min, eps, L, r_c, num_bins, p, N, d, force, Ep, vir, c_bin)
     implicit none
 
@@ -34,8 +32,6 @@ subroutine lennard_jones(r_min, eps, L, r_c, num_bins, p, N, d, force, Ep, vir, 
     real(8), dimension(d) :: r
     real(8) :: r_abs, force_fact
     integer :: i, j, bin_num
-
-
 
     do i=1,N
         do j=1,N

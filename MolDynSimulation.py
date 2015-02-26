@@ -5,80 +5,73 @@ import matplotlib.pyplot as plt
 
 class MolDynSimulation(object) :
 
-    # all the initialization functions are called in this block
+    # all the initialization is done in this block
     def __init__(self) :
         self.particles = var.Particles()
 
-        # Number of simulation loops
-        self.numIterations = 500
-        self.Eold = float("Inf")
-        self.Ediff = float("Inf")
+        self.n = 500                                # number of iterations
+        self.energy = np.zeros(self.n)              # energy values
+        self.cv = np.zeros(self.n)                  # specific heat values
+        self.T = np.zeros(self.n)                   # temperature values
+        self.potential = np.zeros(self.n)           # potential energy values
+        self.beta = np.zeros(self.n)                # compressibility values
+        self.vCorrelationMean = np.zeros(self.n)
+        self.D = np.zeros(self.n)
 
-        # Create animation object
-        # self.animation = an.VpyAnimate(self.particles, 1000)
+        # self.animation = an.VpyAnimate(self.particles, self.n)
 
-
-    # start of the simulation
+    # start the simulation loop
     def start(self):
 
-        energy = np.empty(self.numIterations)
-        cV = np.zeros(self.numIterations)
-        temperature = np.empty(self.numIterations)
-        compressibility = np.empty(self.numIterations)
-        potentialEnergy = np.empty(self.numIterations)
-        v0 = self.particles.velocities.copy()
-        vcorrmean = np.zeros(self.numIterations)
-        D = np.zeros(self.numIterations)
+        for i in range(0,self.n):
+            self.particles.update(var.dt)
 
-        e2Avg = 0.0
-        eAvg = 0.0
-        for i in range(0,self.numIterations):
-            self.particles.update(var.deltaT)
+            self.energy[i] = self.particles.energy
+            self.potential[i] = self.particles.potential
+            self.T[i] = self.particles.temperature
+            self.beta[i] = self.particles.pressure/(var.T*var.density)
 
-            energy[i] = self.particles.energy
-            temperature[i] = self.particles.temperature
-            potentialEnergy[i] = self.particles.potential
-            compressibility[i] = self.particles.pressure/(var.T*var.density)
+            cvIndex = i - self.n/2
+            if (i >= self.n/2):
+                self.cv[cvIndex] = np.var(self.energy[(self.n/2-10):i])/(var.T**2)
 
-            cvIndex = i - self.numIterations/2
-            if (i >= self.numIterations/2):
-                cV[cvIndex] = np.var(energy[(self.numIterations/2-10):i])/(var.T**2)
-            vt = self.particles.velocities
-            vcorr = np.sum(v0 * vt,axis=1)
-            vcorrmean[i] = np.mean(vcorr)
-            D[i] = np.sum(vcorrmean * var.deltaT)
+            self.vCorrelationMean[i] = np.mean(self.particles.getVelCorrelation())
+            self.D[i] = np.sum(self.vCorrelationMean * var.dt)
 
-
-            # if (i<1000):
             #      self.animation.plot_anim(self.particles.positions)
 
             print i
 
-        plt.plot(self.particles.getCorrelationFunction(self.numIterations))
+    # plot the results using matPlotLib
+    def plot(self):
+        plt.figure()
+        plt.plot(self.particles.getCorrelationFunction(self.n))
         plt.title("correlation function")
-        plt.show()
-        plt.plot(compressibility)
+        plt.figure()
+        plt.plot(self.beta)
         plt.title("compressibility")
-        plt.show()
-        plt.plot(temperature)
+        plt.figure()
+        plt.plot(self.T)
         plt.title("temperature")
-        plt.show()
-        plt.plot(cV)
+        plt.figure()
+        plt.plot(self.cv)
         plt.title("cV")
-        plt.show()
-        plt.plot(energy)
+        plt.figure()
+        plt.plot(self.energy)
         plt.title("energy")
-        plt.show()
-        plt.plot(potentialEnergy)
+        plt.figure()
+        plt.plot(self.potential)
         plt.title("potential energy")
-        plt.show()
-        plt.plot(vcorrmean)
+        plt.figure()
+        plt.plot(self.vCorrelationMean)
         plt.title("velocity autocorrelation")
-        plt.show()
-        plt.plot(D)
+        plt.figure()
+        plt.plot(self.D)
         plt.title("velocity autocorrelation")
         plt.show()
 
-# init and loop
+
+# init, loop and plot
 molDynSimulation = MolDynSimulation()
 molDynSimulation.start()
+molDynSimulation.plot()

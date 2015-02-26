@@ -11,9 +11,12 @@ import lennard_jones as lj
 # output:   force -> numParticles by dimension matrix holding the force components on the particles
 #           potentialEnergy -> total potential energy for the particles
 def lennardJones(positions):
-    return lj.lennard_jones(var.rMin, var.eps, var.boxSize, var.rCutoff, var.numBins, positions)
+    return lj.lennard_jones(var.rMin, var.eps, var.boxSize, var.rC, var.numBins, positions)
 
-#################unused################
+#######################################
+#################UNUSED################
+#######################################
+
 # Lennard - Jones vectorized in python
 
 # function Len_Jones.
