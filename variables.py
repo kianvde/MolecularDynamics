@@ -25,7 +25,7 @@ a = ((kB * T) / m)**0.5                     # Maxwell-Boltzmann standard deviati
 eps =  1.0                                  # Lennard-Jones depth of potential well
 sigma = 1.0                                 # Lennard-Jones sigma
 rMin = sigma * 2.0**(1.0/6.0)               # Lennard-Jones distance at which potential is minimal
-rCutoff = 3.3*sigma                         # interaction range for the particles
+rCutoff = 0.45 * boxSize #3.3*sigma                         # interaction range for the particles
 tau = deltaT / 0.25                         # Thermostat rise time
 
 
@@ -150,7 +150,7 @@ class Particles(object):
         else:
             vF = np.mean(self.virialFactor[-9:])
 
-        self.pressure = density*T*(kB - vF/(6.0*numParticles*T))
+        self.pressure = density*T*(kB - vF/(3.0*numParticles*T))
 
     ## UNUSED ##
 
