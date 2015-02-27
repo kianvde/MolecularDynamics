@@ -11,7 +11,7 @@ class MolDynSimulation(object) :
     def __init__(self) :
         self.particles = var.Particles()
 
-        self.n = 500                                # number of iterations
+        self.n = 10000                                # number of iterations
         self.energy = np.zeros(self.n)              # energy values
         self.cv = np.zeros(self.n)                  # specific heat values
         self.T = np.zeros(self.n)                   # temperature values
@@ -50,12 +50,13 @@ class MolDynSimulation(object) :
 
             print i
 
+    # write data to files
     def write(self):
 
         if not os.path.exists("data"):
             os.makedirs("data")
 
-        timeString = time.strftime("%m_%d_%H_%M")
+        timeString = time.strftime("%m_%d_%H_%M_%S")
 
         logFile = open('data/log.txt', 'a')
         logFile.write("\n------%s.txt------\n" % timeString)
@@ -68,7 +69,7 @@ class MolDynSimulation(object) :
         logFile.write("##OUTPUT##\n")
         logFile.write("data file structure from first to last line:\n")
         logFile.write("temperature, energy, potential, compressibility, ")
-        logFile.write("specific heat, velocity correlation mean, ")
+        logFile.write("virial factor, specific heat, ")
         logFile.write("diffusion constant, correlation function\n")
 
         # write the data to a file
@@ -85,10 +86,10 @@ class MolDynSimulation(object) :
         for value in self.compressibility:
             dataFile.write("%e " % value)
         dataFile.write("\n")
-        for value in self.cv:
-            dataFile.write("%e " % value)
+        for value in self.particles.virialFactor:
+            dataFile.write("%e" % value)
         dataFile.write("\n")
-        for value in self.vCorrelationMean:
+        for value in self.cv:
             dataFile.write("%e " % value)
         dataFile.write("\n")
         for value in self.D:
@@ -129,6 +130,20 @@ class MolDynSimulation(object) :
 
 
 # init, loop and plot
-molDynSimulation = MolDynSimulation()
-molDynSimulation.start()
-molDynSimulation.write()
+
+rhoVector = np.array([0.35, 0.45, 0.55, 0.65, 0.75, 0.85])
+tVector = np.array([0.591, 0.760, 0.880, 1.214, 2.202])
+
+var.T = 1.036
+for rhoIteration in rhoVector:
+    var.density = rhoIteration
+    molDynSimulation = MolDynSimulation()
+    molDynSimulation.start()
+    molDynSimulation.write()
+
+var.density = 0.85
+for tIteration in tVector:
+    var.T = tIteration
+    molDynSimulation = MolDynSimulation()
+    molDynSimulation.start()
+    molDynSimulation.write()

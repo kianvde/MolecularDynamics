@@ -10,10 +10,10 @@ from matplotlib import pyplot as plt
 ## Constants and variables are given in natural units (i.e sigma = 1, kB  = 1, epsilon = 1)
 
 ## variables ##
-numParticlesAxis = 10   # Number of particles per axis
+numParticlesAxis = 2    # Number of particles per axis
 dt = 0.032              # time step
 density = 0.65          # Density
-T = 1.036               # Temperature
+T = 1.0                 # Temperature
 
 ## constants ##
 dimension = 3                               # dimensionality of the system
@@ -84,22 +84,22 @@ class Particles(object):
         # # velocity-verlet (2nd order)
         # self.updateParticles(dT, 1)
         # self.updateVelocities(dT, 0.5)
-        # self.updateForce()
+        # self.updateForce(True)
         # self.updateVelocities(dT, 0.5)
 
         # symplectic RK4 integrator (4th order) (Forest & Ruth, 1989)
         X = (1.0/6.0) * (2.0**(1.0/3.0) + 2.0**(-1.0/3.0) - 1)
         self.updateParticles(dT, X + 0.5)
-        self.updateForce()
+        self.updateForce(False)
         self.updateVelocities(dT, 2.0*X + 1.0)
         self.updateParticles(dT, -X)
-        self.updateForce()
+        self.updateForce(False)
         self.updateVelocities(dT, -4.0*X - 1.0)
         self.updateParticles(dT, -X)
-        self.updateForce()
+        self.updateForce(False)
         self.updateVelocities(dT, 2.0*X + 1.0)
         self.updateParticles(dT, X + 0.5)
-        self.updateForce()
+        self.updateForce(True)
 
         # Temperature rescaling according to Berendsen thermostat
         if rescale == 1:
@@ -134,11 +134,13 @@ class Particles(object):
         self.velocities += C * (self.force / m) * dT
 
     # update the forces on the particles and calculate the potential energy
-    def updateForce(self):
+    def updateForce(self, addToCorrelationBin):
 
         self.force, self.potential, vF, cBin = lennardJones(self.positions)
         self.virialFactor = np.append(self.virialFactor, vF)
-        self.bin += cBin
+
+        if (addToCorrelationBin):
+            self.bin += cBin
 
 
     ## calculation functions
@@ -163,4 +165,4 @@ class Particles(object):
 
         prefactor = 2.0/(density*(N-1.0)) * 1.0/(4*np.pi*(rC/numBins))
 
-        return (prefactor/(4*numIterations)) * (self.bin/r2)
+        return (prefactor/(numIterations)) * (self.bin/r2)
