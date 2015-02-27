@@ -2,6 +2,8 @@ import variables as var
 import numpy as np
 import vpy_animate as an
 import matplotlib.pyplot as plt
+import time
+import os
 
 class MolDynSimulation(object) :
 
@@ -14,7 +16,7 @@ class MolDynSimulation(object) :
         self.cv = np.zeros(self.n)                  # specific heat values
         self.T = np.zeros(self.n)                   # temperature values
         self.potential = np.zeros(self.n)           # potential energy values
-        self.beta = np.zeros(self.n)                # compressibility values
+        self.compressibility = np.zeros(self.n)     # compressibility values
         self.vCorrelationMean = np.zeros(self.n)
         self.D = np.zeros(self.n)
 
@@ -29,7 +31,7 @@ class MolDynSimulation(object) :
             self.energy[i] = self.particles.energy
             self.potential[i] = self.particles.potential
             self.T[i] = self.particles.temperature
-            self.beta[i] = self.particles.pressure/(var.T*var.density)
+            self.compressibility[i] = self.particles.pressure/(var.T*var.density)
 
             cvIndex = i - self.n/2
             if (i >= self.n/2):
@@ -41,6 +43,55 @@ class MolDynSimulation(object) :
             #      self.animation.plot_anim(self.particles.positions)
 
             print i
+
+    def write(self):
+
+        if not os.path.exists("data"):
+            os.makedirs("data")
+
+        timeString = time.strftime("%m_%d_%H_%M")
+
+        logFile = open('data/log.txt', 'a')
+        logFile.write("\n------%s.txt------\n" % timeString)
+        logFile.write("##INPUT##\n")
+        logFile.write("number of particles (N): %i\n" % var.N)
+        logFile.write("density: %g\n" % var.density)
+        logFile.write("time step (dt): %g\n" % var.dt)
+        logFile.write("initial temperature (T): %g\n" % var.T)
+        logFile.write("number of iterations (n): %i\n" % self.n)
+        logFile.write("##OUTPUT##\n")
+        logFile.write("data file structure from first to last line:\n")
+        logFile.write("temperature, energy, potential, compressibility, ")
+        logFile.write("specific heat, velocity correlation mean, ")
+        logFile.write("diffusion constant, correlation function\n")
+
+        # write the data to a file
+        dataFile = open('data/%s.txt' % timeString,'w')
+        for value in self.T:
+            dataFile.write("%e " % value)
+        dataFile.write("\n")
+        for value in self.energy:
+            dataFile.write("%e " % value)
+        dataFile.write("\n")
+        for value in self.potential:
+            dataFile.write("%e " % value)
+        dataFile.write("\n")
+        for value in self.compressibility:
+            dataFile.write("%e " % value)
+        dataFile.write("\n")
+        for value in self.cv:
+            dataFile.write("%e " % value)
+        dataFile.write("\n")
+        for value in self.vCorrelationMean:
+            dataFile.write("%e " % value)
+        dataFile.write("\n")
+        for value in self.D:
+            dataFile.write("%e " % value)
+        dataFile.write("\n")
+        for value in self.particles.getCorrelationFunction(self.n):
+            dataFile.write("%e " % value)
+        dataFile.write("\n")
+        dataFile.close()
 
     # plot the results using matPlotLib
     def plot(self):
@@ -67,11 +118,11 @@ class MolDynSimulation(object) :
         plt.title("velocity autocorrelation")
         plt.figure()
         plt.plot(self.D)
-        plt.title("velocity autocorrelation")
+        plt.title("diffusion constant")
         plt.show()
 
 
 # init, loop and plot
 molDynSimulation = MolDynSimulation()
 molDynSimulation.start()
-molDynSimulation.plot()
+molDynSimulation.write()
