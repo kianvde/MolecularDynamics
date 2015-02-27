@@ -19,6 +19,7 @@ class MolDynSimulation(object) :
         self.compressibility = np.zeros(self.n)     # compressibility values
         self.vCorrelationMean = np.zeros(self.n)
         self.D = np.zeros(self.n)
+        self.kinetic = np.zeros(self.n)
 
         # self.animation = an.VpyAnimate(self.particles, self.n)
 
@@ -26,16 +27,21 @@ class MolDynSimulation(object) :
     def start(self):
 
         for i in range(0,self.n):
-            self.particles.update(var.dt)
+            if i < self.n/2:
+                self.particles.update(var.dt,1)
+            else:
+                self.particles.update(var.dt,0)
 
             self.energy[i] = self.particles.energy
+            self.kinetic[i] = self.particles.kinetic
             self.potential[i] = self.particles.potential
             self.T[i] = self.particles.temperature
             self.compressibility[i] = self.particles.pressure/(var.T*var.density)
 
             cvIndex = i - self.n/2
             if (i >= self.n/2):
-                self.cv[cvIndex] = np.var(self.energy[(self.n/2-10):i])/(var.T**2)
+                kinfluc = np.var(self.kinetic[(self.n/2-10):i])/(np.mean(self.kinetic[(self.n/2-10):i])**2)
+                self.cv[cvIndex] = 1.0 / ((2.0 / 3.0) - kinfluc * var.N)
 
             self.vCorrelationMean[i] = np.mean(self.particles.getVelCorrelation())
             self.D[i] = np.sum(self.vCorrelationMean * var.dt)

@@ -7,13 +7,13 @@ import matplotlib
 matplotlib.use("qt4agg")
 from matplotlib import pyplot as plt
 
-## Constants and variables are given in nm, ps units (i.e distance 1 = 1 nm, time 1 = 1 ps)
+## Constants and variables are given in natural units (i.e sigma = 1, kB  = 1, epsilon = 1)
 
 ## variables ##
 numParticlesAxis = 10   # Number of particles per axis
 dt = 0.032              # time step
 density = 0.65          # Density
-T = 1.036               # Temperature (in Kelvin)
+T = 1.036               # Temperature
 
 ## constants ##
 dimension = 3                               # dimensionality of the system
@@ -21,7 +21,7 @@ N = numParticlesAxis**3                     # number of particles
 boxSize = (N/density)**(1./3)               # length of the box side of the box
 m = 48                                      # Mass
 k = 1.0                                     # Boltzmann constant
-a = ((k * T) / m)**0.5                      # Maxwell-Boltzmann standard deviation per component sqrt(3kT/m)
+a = ((k * T) / m)**0.5                      # Maxwell-Boltzmann standard deviation per component sqrt(kT/m)
 eps =  1.0                                  # Lennard-Jones depth of potential well
 sig = 1.0                                   # Lennard-Jones sigma
 rMin = sig * 2.0**(1.0/6.0)                 # Lennard-Jones distance at which potential is minimal
@@ -42,6 +42,7 @@ class Particles(object):
 
         self.force = np.zeros(np.shape(self.positions))
         self.energy = 0
+        self.kinetic = 0
         self.potential = 0
         self.pressure = 0
         self.temperature = T
@@ -78,7 +79,7 @@ class Particles(object):
 
 
     ## update functions ##
-    def update(self, dT):
+    def update(self, dT, rescale):
 
         # # velocity-verlet (2nd order)
         # self.updateParticles(dT, 1)
@@ -101,12 +102,14 @@ class Particles(object):
         self.updateForce()
 
         # Temperature rescaling according to Berendsen thermostat
-        lambdy = (1.0 + (dT/tau)*(T/self.temperature - 1.0))**0.5
-        self.velocities = self.velocities * lambdy
+        if rescale == 1:
+            lambdy = (1.0 + (dT/tau)*(T/self.temperature - 1.0))**0.5
+            self.velocities = self.velocities * lambdy
 
         # calculation energy and temperature
         v2 = np.sum(self.velocities**2)
-        self.energy = 0.5*m*v2 + self.potential
+        self.kinetic = 0.5*m*v2
+        self.energy = self.kinetic + self.potential
         self.temperature = (2.0/3.0)*(0.5*m*v2)/(N*k)
 
         # calculate pressure
