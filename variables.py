@@ -152,7 +152,9 @@ class Particles(object):
         else:
             vF = np.mean(self.virialFactor[-9:])
 
-        self.pressure = density*T*(k - vF/(3.0*N*T))
+        tailcorrfact = - 48.0 * eps * np.pi * rC**3
+        tailcorr = tailcorrfact * ((1.0 / 9.0) * (rMin / rC)**12 - (1.0 / 3.0) * (rMin / rC)**6)
+        self.pressure = density*T*(k - vF/(3.0*N*T)) - density**2 * tailcorr / 3.0
 
     # get the velocity correlation
     def getVelCorrelation(self):

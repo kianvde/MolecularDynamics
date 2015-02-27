@@ -106,7 +106,7 @@ class MolDynSimulation(object) :
         plt.plot(self.particles.getCorrelationFunction(self.n))
         plt.title("correlation function")
         plt.figure()
-        plt.plot(self.beta)
+        plt.plot(self.compressibility)
         plt.title("compressibility")
         plt.figure()
         plt.plot(self.T)
