@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 ## Constants and variables are given in natural units (i.e sigma = 1, kB  = 1, epsilon = 1)
 
 ## variables ##
-numParticlesAxis = 2    # Number of particles per axis
+numParticlesAxis = 10   # Number of particles per axis
 dt = 0.032              # time step
 density = 0.65          # Density
 T = 1.0                 # Temperature
@@ -137,10 +137,11 @@ class Particles(object):
     def updateForce(self, addToCorrelationBin):
 
         self.force, self.potential, vF, cBin = lennardJones(self.positions)
-        self.virialFactor = np.append(self.virialFactor, vF)
+        # self.virialFactor = np.append(self.virialFactor, vF)
 
         if (addToCorrelationBin):
             self.bin += cBin
+            self.virialFactor = np.append(self.virialFactor, vF)
 
 
     ## calculation functions

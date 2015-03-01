@@ -11,7 +11,7 @@ class MolDynSimulation(object) :
     def __init__(self) :
         self.particles = var.Particles()
 
-        self.n = 10000                                # number of iterations
+        self.n = 10000                              # number of iterations
         self.energy = np.zeros(self.n)              # energy values
         self.cv = np.zeros(self.n)                  # specific heat values
         self.T = np.zeros(self.n)                   # temperature values
@@ -135,15 +135,23 @@ rhoVector = np.array([0.35, 0.45, 0.55, 0.65, 0.75, 0.85])
 tVector = np.array([0.591, 0.760, 0.880, 1.214, 2.202])
 
 var.T = 1.036
+var.a = ((var.k * var.T) / var.m)**0.5
 for rhoIteration in rhoVector:
     var.density = rhoIteration
+    var.boxSize = (var.N/var.density)**(1./3)
+    var.rC = 0.45 * var.boxSize
     molDynSimulation = MolDynSimulation()
+    molDynSimulation.__init__()
+    molDynSimulation.particles.__init__()
     molDynSimulation.start()
     molDynSimulation.write()
 
-var.density = 0.85
-for tIteration in tVector:
-    var.T = tIteration
-    molDynSimulation = MolDynSimulation()
-    molDynSimulation.start()
-    molDynSimulation.write()
+# var.density = 0.85
+# var.boxSize = (var.N/var.density)**(1./3)
+# var.rC = 0.45 * var.boxSize
+# for tIteration in tVector:
+#     var.T = tIteration
+#     var.a = ((var.k * var.T) / var.m)**0.5
+#     molDynSimulation = MolDynSimulation()
+#     molDynSimulation.start()
+#     molDynSimulation.write()
