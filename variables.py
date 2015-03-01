@@ -146,6 +146,8 @@ class Particles(object):
 
         self.force, self.potential, vF, cBin = lennardJones(self.positions)
         # self.virialFactor = np.append(self.virialFactor, vF)
+        tailcorrU = 4.0 * np.pi * rC**3 * ((1.0/9.0) * (2.0**(1.0/6.0)/rC)**12 - (1.0/3.0)*(2.0**(1.0/6.0)/rC)**6);
+        self.potential = self.potential + tailcorrU
 
         if (addToCorrelationBin):
             self.bin += cBin
@@ -161,9 +163,9 @@ class Particles(object):
         else:
             vF = np.mean(self.virialFactor[-9:])
 
-        tailcorrfact = - 48.0 * eps * np.pi * rC**3
-        tailcorr = tailcorrfact * ((1.0 / 9.0) * (rMin / rC)**12 - (1.0 / 3.0) * (rMin / rC)**6)
-        self.pressure = density*T*(k - vF/(3.0*N*T)) - density**2 * tailcorr / 3.0
+        tailcorrfact = - 12.0 * eps * rC
+        tailcorr = tailcorrfact * ((1.0 / 11.0) * (rMin / rC)**12 - (1.0 / 5.0) * (rMin / rC)**6)
+        self.pressure = density*T*(k - vF/(3.0*N*T)) - density * tailcorr / 3.0
 
     # get the velocity correlation
     def getVelCorrelation(self):
