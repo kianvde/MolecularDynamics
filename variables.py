@@ -29,6 +29,14 @@ rC = 0.45 * boxSize                         # interaction range for the particle
 tau = dt / 0.25                             # Thermostat rise time
 numBins = 100                               # number of bins for correlation function calculation
 
+def calculateDerivedConstants():
+    global N, boxSize, a, rC, tau
+    N = numParticlesAxis**3                     # number of particles
+    boxSize = (N/density)**(1./3)               # length of the box side of the box
+    a = ((k * T) / m)**0.5                      # Maxwell-Boltzmann standard deviation per component sqrt(kT/m)
+    rC = 0.45 * boxSize                         # interaction range for the particles
+    tau = dt / 0.25                             # Thermostat rise time
+
 
 ## Particles
 # class with the simulation information and update functionality
